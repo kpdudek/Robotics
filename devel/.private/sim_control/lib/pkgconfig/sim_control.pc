@@ -1,0 +1,8 @@
+prefix=/home/kurt/Robotics/devel/.private/sim_control
+
+Name: sim_control
+Description: Description of sim_control
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

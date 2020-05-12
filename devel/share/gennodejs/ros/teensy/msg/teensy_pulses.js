@@ -1,0 +1,1 @@
+/home/kurt/Robotics/devel/.private/teensy/share/gennodejs/ros/teensy/msg/teensy_pulses.js

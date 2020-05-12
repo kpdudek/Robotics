@@ -1,0 +1,6 @@
+devel_space: /home/kurt/Robotics/devel
+install: false
+install_space: /home/kurt/Robotics/install
+profile: default
+source_space: /home/kurt/Robotics/src
+workspace: /home/kurt/Robotics
