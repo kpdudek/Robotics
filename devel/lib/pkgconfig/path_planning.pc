@@ -1,0 +1,1 @@
+/home/kurt/Robotics/devel/.private/path_planning/lib/pkgconfig/path_planning.pc

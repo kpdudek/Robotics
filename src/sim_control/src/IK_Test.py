@@ -34,7 +34,7 @@ def main():
     j3 = Float64()
     j4 = Float64()
 
-    with open('/home/kurt/Senior_Design/src/sim_control/src/irac.urdf', 'r') as file:
+    with open('AR3_noGazebo.urdf', 'r') as file:
         urdf = file.read()
     Solver = IK("world", "flange", urdf_string=urdf)
 
