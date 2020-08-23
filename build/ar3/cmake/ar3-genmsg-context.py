@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/kurt/Robotics/src/ar3/msg/ar3_Feedback.msg"
+messages_str = "/home/kurt/Robotics/src/ar3/msg/ar3_feedback.msg"
 services_str = ""
 pkg_name = "ar3"
 dependencies_str = "std_msgs"

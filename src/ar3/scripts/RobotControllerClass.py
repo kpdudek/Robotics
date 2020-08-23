@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from Teensy.msg import AR3_Control
-from AR3.msg import AR3_Feedback
+from teensy.msg import ar3_control
+from ar3.msg import ar3_feedback
 import rospy
 import time
 from math import sin
@@ -13,11 +13,11 @@ import sys
 class RobotController(object):
     def __init__(self):
         # ROS stuff
-        self.AR3Control = AR3_Control()
-        self.AR3Feedback = AR3_Feedback()
+        self.AR3Control = ar3_control()
+        self.AR3Feedback = ar3_feedback()
 
-        self.AR3ControlPub = rospy.Publisher('/AR3/Control', AR3_Control, queue_size = 1)
-        self.AR3FeedbackSub = rospy.Subscriber('/AR3/Feedback', AR3_Feedback, self.AR3FeedbackCallback)
+        self.AR3ControlPub = rospy.Publisher('/AR3/Control', ar3_control, queue_size = 1)
+        self.AR3FeedbackSub = rospy.Subscriber('/AR3/Feedback', ar3_feedback, self.AR3FeedbackCallback)
 
     def AR3FeedbackCallback(self,data):
         data.joint_angles = list(data.joint_angles)

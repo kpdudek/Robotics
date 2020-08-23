@@ -8,23 +8,23 @@ from std_msgs.msg import Float64
 import time
 import sys
 import os,getopt
-from Teensy.msg import AR3_Control
-from AR3.msg import AR3_Feedback
+from teensy.msg import ar3_control
+from ar3.msg import ar3_feedback
 from control_msgs.msg import JointControllerState
 
 import sys
 import os
 import pwd
 name = pwd.getpwuid( os.getuid() ).pw_name
-file_path = '/home/%s/Senior_Design/src/AR3/scripts'%name
+file_path = '/home/%s/Robotics/src/ar3/scripts'%name
 sys.path.insert(1,file_path)
 from RobotControllerClass import RobotController
 
 class SimulatedAR3Feedback(object):
     def __init__(self):
        
-        self.AR3FeedbackPub = rospy.Publisher('/AR3/Feedback', AR3_Feedback, queue_size = 1)
-        self.AR3_Feedback = AR3_Feedback()
+        self.AR3FeedbackPub = rospy.Publisher('/AR3/Feedback', ar3_feedback, queue_size = 1)
+        self.AR3_Feedback = ar3_feedback()
         self.AR3_Feedback.running = 1
 
         self.j1_sub = rospy.Subscriber('/rrbot/joint1_position_controller/state', JointControllerState, self.joint1_callback)

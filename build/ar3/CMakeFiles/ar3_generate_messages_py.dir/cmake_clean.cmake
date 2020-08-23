@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/ar3_generate_messages_py"
-  "/home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_Feedback.py"
+  "/home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_feedback.py"
   "/home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/__init__.py"
 )
 

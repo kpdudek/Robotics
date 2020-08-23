@@ -8,14 +8,14 @@ from std_msgs.msg import Float64
 import time
 import sys
 import os,getopt
-from Teensy.msg import AR3_Control
-from AR3.msg import AR3_Feedback
+from teensy.msg import ar3_control
+from ar3.msg import ar3_feedback
 
 import sys
 import os
 import pwd
 name = pwd.getpwuid( os.getuid() ).pw_name
-file_path = '/home/%s/Senior_Design/src/AR3/scripts'%name
+file_path = '/home/%s/Robotics/src/ar3/scripts'%name
 sys.path.insert(1,file_path)
 from RobotControllerClass import RobotController
 
@@ -27,7 +27,7 @@ class Interpreter(object):
         self.joint4 = Float64()
         self.joint5 = Float64()
         self.joint6 = Float64()
-        self.AR3_Control = AR3_Control()
+        self.AR3_Control = ar3_control()
         
         self.j1_pub = rospy.Publisher('/rrbot/joint1_position_controller/command', Float64, queue_size = 1)
         self.j2_pub = rospy.Publisher('/rrbot/joint2_position_controller/command', Float64, queue_size = 1)
@@ -36,7 +36,7 @@ class Interpreter(object):
         self.j5_pub = rospy.Publisher('/rrbot/joint5_position_controller/command', Float64, queue_size = 1)
         self.j6_pub = rospy.Publisher('/rrbot/joint6_position_controller/command', Float64, queue_size = 1)
 
-        self.AR3ControlSub = rospy.Subscriber('/AR3/Control', AR3_Control, self.AR3ControlCallback)
+        self.AR3ControlSub = rospy.Subscriber('/AR3/Control', ar3_control, self.AR3ControlCallback)
     
     def AR3ControlCallback(self,data):
         self.AR3_Control = data

@@ -8,14 +8,14 @@ from std_msgs.msg import Float64
 import time
 import sys
 import os,getopt
-from Teensy.msg import AR3_Control
-from AR3.msg import AR3_Feedback
+from teensy.msg import ar3_control
+from ar3.msg import ar3_feedback
 
 import sys
 import os
 import pwd
 name = pwd.getpwuid( os.getuid() ).pw_name
-file_path = '/home/%s/Senior_Design/src/AR3/scripts'%name
+file_path = '/home/%s/Robotics/src/ar3/scripts'%name
 sys.path.insert(1,file_path)
 from RobotControllerClass import RobotController
 

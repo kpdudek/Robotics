@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/ar3_generate_messages_cpp"
-  "/home/kurt/Robotics/devel/.private/ar3/include/ar3/ar3_Feedback.h"
+  "/home/kurt/Robotics/devel/.private/ar3/include/ar3/ar3_feedback.h"
 )
 
 # Per-language clean rules from dependency scanning.
