@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from Teensy.msg import AR3_Control
-from AR3.msg import AR3_Feedback
+from teensy.msg import ar3_control
+from ar3.msg import ar3_feedback
 import rospy
 import time
 from math import sin

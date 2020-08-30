@@ -306,7 +306,7 @@
   <link name="flange"/>
 
   <!-- Flange joint -->
-  <joint name="flange_joint" type="continuous">
+  <joint name="flange_joint" type="fixed">
     <parent link="link6"/>
     <child link="flange"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>

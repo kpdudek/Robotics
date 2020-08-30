@@ -1,7 +1,7 @@
 #include <ros.h>
 #include <std_msgs/Float64.h>
-#include <AR3/AR3_Feedback.h>
-#include <Teensy/AR3_Control.h>
+#include <ar3/ar3_feedback.h>
+#include <teensy/ar3_control.h>
 #include <math.h>
 #include <Encoder.h>
 #include <Servo.h>
@@ -51,7 +51,7 @@ float pulse6Rev = 800.0*(19.0+(38.0/187.0)); // pulse/rev, gearbox;
 // Pulse width of the signal sent to the stepper driver. This time is in microsecons
 // and is passed to the delay_microseconds() function. Making this value larger will
 // severely affect the frequency at which the main loop runs
-int pulDelay = 50; // default is 50 for max speed
+int pulDelay = 100; // default is 50 for max speed
 
 // Joint angle variables
 float SetAngles[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
@@ -93,7 +93,7 @@ int gripper_cmd = 0, closed_pos = 0, opened_pos = 80;
 // Joint 1 callback
 ros::NodeHandle  nh;
 
-void AR3ControlCallback(const Teensy::AR3_Control &AR3_Control_Data){
+void AR3ControlCallback(const teensy::ar3_control &AR3_Control_Data){
     memcpy(SetAngles,AR3_Control_Data.joint_angles,sizeof(SetAngles));
     home = AR3_Control_Data.home;
     run = AR3_Control_Data.run;
@@ -101,9 +101,9 @@ void AR3ControlCallback(const Teensy::AR3_Control &AR3_Control_Data){
     gripper_cmd = AR3_Control_Data.close_gripper;
 }
 
-ros::Subscriber<Teensy::AR3_Control> AR3ControlSub("/AR3/Control",& AR3ControlCallback);
+ros::Subscriber<teensy::ar3_control> AR3ControlSub("/AR3/Control",& AR3ControlCallback);
 
-AR3::AR3_Feedback AR3FeedbackData;
+ar3::ar3_feedback AR3FeedbackData;
 ros::Publisher AR3FeedbackPub("/AR3/Feedback", &AR3FeedbackData);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

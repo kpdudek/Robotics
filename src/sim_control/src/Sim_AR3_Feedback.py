@@ -63,7 +63,7 @@ class SimulatedAR3Feedback(object):
 
 def main():
         rospy.init_node('Simulated_AR3_Feedback', anonymous='True')
-        rate = rospy.Rate(60)
+        rate = rospy.Rate(30)
 
         feedback = SimulatedAR3Feedback()
         while not rospy.is_shutdown():

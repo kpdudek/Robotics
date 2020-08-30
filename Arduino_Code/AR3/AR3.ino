@@ -1,7 +1,7 @@
 #include <ros.h>
 #include <std_msgs/Float64.h>
-#include <AR3/AR3_Feedback.h>
-#include <Teensy/AR3_Control.h>
+#include <ar3/ar3_feedback.h>
+#include <teensy/ar3_control.h>
 #include <math.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,11 +78,11 @@ int rest = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Definitions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-AR3::AR3_Feedback AR3FeedbackData;
+ar3::ar3_feedback AR3FeedbackData;
 ros::Publisher AR3FeedbackPub("/AR3/Feedback", &AR3FeedbackData);
 
 // Joint 1 callback
-void AR3ControlCallback(const Teensy::AR3_Control &AR3_Control_Data){
+void AR3ControlCallback(const teensy::ar3_control &AR3_Control_Data){
     memcpy(SetAngles,AR3_Control_Data.joint_angles,sizeof(SetAngles));
     home = AR3_Control_Data.home;
     run = AR3_Control_Data.run;
@@ -90,7 +90,7 @@ void AR3ControlCallback(const Teensy::AR3_Control &AR3_Control_Data){
 }
 
 ros::NodeHandle  nh;
-ros::Subscriber<Teensy::AR3_Control> AR3ControlSub("/AR3/Control",& AR3ControlCallback);
+ros::Subscriber<teensy::ar3_control> AR3ControlSub("/AR3/Control",& AR3ControlCallback);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Setup

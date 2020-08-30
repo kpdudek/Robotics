@@ -6,14 +6,14 @@ from math import pi
 import numpy as np
 import time
 from sensor_msgs.msg import Joy
-from AR3.msg import AR3_Feedback
-from Teensy.msg import AR3_Control
+from ar3.msg import ar3_feedback
+from teensy.msg import ar3_control
 
 import sys
 import os
 import pwd
 name = pwd.getpwuid( os.getuid() ).pw_name
-file_path = '/home/%s/Senior_Design/src/AR3/scripts'%name
+file_path = '/home/%s/Robotics/src/ar3/scripts'%name
 sys.path.insert(1,file_path)
 from RobotControllerClass import RobotController
 from JoyControlClass import JoyController

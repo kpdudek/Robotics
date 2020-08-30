@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- Revolute-Revolute Manipulator -->
-<robot name="AR3_Pedestal" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="AR3" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <!-- Constants for robot dimensions -->
   <xacro:property name="PI" value="3.1415926535897931"/>
@@ -20,7 +20,7 @@
   <joint name="BaseJoint" type="fixed">
     <parent link="world"/>
     <child link="base"/>
-    <origin xyz="0 0 1" rpy="0 0 0"/>
+    <origin xyz="0 0 0.08763" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="0.7"/>
   </joint>
