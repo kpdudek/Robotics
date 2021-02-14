@@ -7,8 +7,8 @@
           RESTING
           RUNNING-VAL
           RUNNING
-          GRIPPER_CLOSED-VAL
-          GRIPPER_CLOSED
+          GRIPPER_ANGLE-VAL
+          GRIPPER_ANGLE
           ENCODER_PULSES-VAL
           ENCODER_PULSES
           JOINT_ANGLES-VAL

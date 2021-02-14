@@ -28,7 +28,7 @@ struct ar3_feedback_
     , homed(0)
     , resting(0)
     , running(0)
-    , gripper_closed(0)
+    , gripper_angle(0)
     , encoder_pulses()
     , joint_angles()
     , setpoint_angles()  {
@@ -43,7 +43,7 @@ struct ar3_feedback_
     , homed(0)
     , resting(0)
     , running(0)
-    , gripper_closed(0)
+    , gripper_angle(0)
     , encoder_pulses()
     , joint_angles()
     , setpoint_angles()  {
@@ -69,8 +69,8 @@ struct ar3_feedback_
    typedef int8_t _running_type;
   _running_type running;
 
-   typedef int8_t _gripper_closed_type;
-  _gripper_closed_type gripper_closed;
+   typedef int8_t _gripper_angle_type;
+  _gripper_angle_type gripper_angle;
 
    typedef boost::array<int64_t, 6>  _encoder_pulses_type;
   _encoder_pulses_type encoder_pulses;
@@ -114,7 +114,7 @@ bool operator==(const ::ar3::ar3_feedback_<ContainerAllocator1> & lhs, const ::a
     lhs.homed == rhs.homed &&
     lhs.resting == rhs.resting &&
     lhs.running == rhs.running &&
-    lhs.gripper_closed == rhs.gripper_closed &&
+    lhs.gripper_angle == rhs.gripper_angle &&
     lhs.encoder_pulses == rhs.encoder_pulses &&
     lhs.joint_angles == rhs.joint_angles &&
     lhs.setpoint_angles == rhs.setpoint_angles;
@@ -174,12 +174,12 @@ struct MD5Sum< ::ar3::ar3_feedback_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "89d9497c396e2b4e5491efb4741ef6f1";
+    return "64163ea4ea47214d9da1c0355fe48ee5";
   }
 
   static const char* value(const ::ar3::ar3_feedback_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x89d9497c396e2b4eULL;
-  static const uint64_t static_value2 = 0x5491efb4741ef6f1ULL;
+  static const uint64_t static_value1 = 0x64163ea4ea47214dULL;
+  static const uint64_t static_value2 = 0x9da1c0355fe48ee5ULL;
 };
 
 template<class ContainerAllocator>
@@ -202,7 +202,7 @@ struct Definition< ::ar3::ar3_feedback_<ContainerAllocator> >
 "int8 homed\n"
 "int8 resting\n"
 "int8 running\n"
-"int8 gripper_closed\n"
+"int8 gripper_angle\n"
 "\n"
 "int64[6] encoder_pulses\n"
 "float64[6] joint_angles\n"
@@ -232,7 +232,7 @@ namespace serialization
       stream.next(m.homed);
       stream.next(m.resting);
       stream.next(m.running);
-      stream.next(m.gripper_closed);
+      stream.next(m.gripper_angle);
       stream.next(m.encoder_pulses);
       stream.next(m.joint_angles);
       stream.next(m.setpoint_angles);
@@ -262,8 +262,8 @@ struct Printer< ::ar3::ar3_feedback_<ContainerAllocator> >
     Printer<int8_t>::stream(s, indent + "  ", v.resting);
     s << indent << "running: ";
     Printer<int8_t>::stream(s, indent + "  ", v.running);
-    s << indent << "gripper_closed: ";
-    Printer<int8_t>::stream(s, indent + "  ", v.gripper_closed);
+    s << indent << "gripper_angle: ";
+    Printer<int8_t>::stream(s, indent + "  ", v.gripper_angle);
     s << indent << "encoder_pulses[]" << std::endl;
     for (size_t i = 0; i < v.encoder_pulses.size(); ++i)
     {

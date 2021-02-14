@@ -6,10 +6,10 @@
 #include <Encoder.h>
 #include <Servo.h>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 //  Pin definitions and Variables
 //  All measuremements are in mm, all angles are in radians
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 #define joint1PUL 0
 #define joint1DIR 1
 
@@ -39,8 +39,9 @@ float pi = 3.1415926;
 // Varables used to store time both current and 'stopwatch' times
 unsigned long int t_old=0, t=0, pub_freq = 500000;
 
-// Number of pulses to rotate a joint 2*PI radians. Accounts for settings on the stepper driver and
-// all mechanical ratios. Inline comments denote the parameters used in the calculation.
+// Number of pulses to rotate a joint 2*PI radians. Accounts for settings on the stepper 
+// driver and all mechanical ratios. Inline comments denote the parameters
+// used in the calculation.
 float pulse1Rev = 1600.0*10.0*4.0; // pulse/rev, gearbox, pulley ratio
 float pulse2Rev = 3200.0*50.0; // pulse/rev, gearbox
 float pulse3Rev = 1600.0*50.0; // pulse/rev, gearbox
@@ -59,8 +60,8 @@ int pulDelay = 100; // default is 50 for max speed
 Encoder Enc1(Enc1_Pin1, Enc1_Pin2);
 long oldPosition1  = -1, newPosition1 = 0;
 
-// Fuzzy equality to prevent jitter in the motors. This value is when the joint is 'close enough'
-// to its setpoint
+// Fuzzy equality to prevent jitter in the motors. This value is when the joint is 'close
+// enough' to its setpoint
 float angleTol = 0.0005;
 
 // Current state of the e-stop pin. Default is True meaning no movements will not occur
@@ -78,10 +79,12 @@ Servo gripper_servo;
 int gripper_angle = 0;
 
 float joint_speed;
+int interp_skips[6] = {0,0,0,0,0,0};
+int max_steps_to_go;
 
-///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 // Class declarations
-///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 class RobotJoint{
   public:
     char id[20];
@@ -96,10 +99,13 @@ class RobotJoint{
     
     unsigned int pul_delay = 0, pulse_min = 60, pulse_max = 800;
     unsigned int accel_delay = 0;
+    int interp_skips = 0, interp_count = 0;
+    int total_steps = 0;
+    int new_goal = 0;
     
     float spd = 1.0;
     
-    float lower_limit = -1.58, upper_limit = 1.58;
+    float lower_limit = -1.0, upper_limit = 1.0;
 
     float setpoint = 0.0, prev_setpoint = -1.0;;
     float angle = 0.0;
@@ -118,17 +124,23 @@ class RobotJoint{
       this->change_speed(this->spd);
     }
     
-    void update_position(void){
+    void update_position(int interp_skips){
         this->t = micros();
 
         if (this->prev_setpoint != this->setpoint){
           this->steps_taken = 0;
           this->prev_setpoint = this->setpoint;
+          this->error = this->setpoint - this->angle;
+          this->steps_to_go = int(abs(this->error / this->step_size));
+          this->total_steps = this->steps_to_go;
+          this->new_goal = 1;
+        }
+        else{
+          this->error = this->setpoint - this->angle;
+          this->steps_to_go = int(abs(this->error / this->step_size));
+          this->new_goal = 0;
         }
         
-        this->error = this->setpoint - this->angle;
-        this->steps_to_go = int(abs(this->error / this->step_size));
-
         if (this->error < -this->tolerance){
             this->dir = -1;
         }
@@ -139,6 +151,22 @@ class RobotJoint{
             return;
         }
 
+        if ((this->angle + (this->dir*this->step_size)) > this->upper_limit){
+          return;
+        }
+        else if ((this->angle + (this->dir*this->step_size)) < this->lower_limit){
+          return;
+        }
+
+        this->interp_skips = interp_skips;
+        if (this->interp_count < this->interp_skips){
+          this->interp_count++;
+          return;
+        }
+        else{
+          this->interp_count = 0;
+        }
+
         if (this->dir == 1){
             digitalWrite(this->dir_pin,HIGH);
         }
@@ -146,11 +174,14 @@ class RobotJoint{
             digitalWrite(this->dir_pin,LOW);
         }
 
-        if (this->steps_to_go < 1000){ // Decellerate
-          this->accel_delay = int((1.0/(this->steps_to_go/20000.0)));
+        if (this->steps_to_go < 1500){ // Decellerate
+          this->accel_delay = int((1.0/(this->steps_to_go/25000.0)));
         }
-        else if (this->steps_taken < 1000){ // Accelerate
-          this->accel_delay = int((1.0/(this->steps_taken/20000.0)));
+        else if (this->steps_taken < 1500){ // Accelerate
+          this->accel_delay = int((1.0/(this->steps_taken/25000.0)));
+          if (this->accel_delay > 1500){
+            this->accel_delay = 1500;
+          }
         }
         else{ // Coast at specified speed
           this->accel_delay = 0;
@@ -161,16 +192,21 @@ class RobotJoint{
             this->t_prev = this->t;
             this->pulse = 0;
             this->angle = this->angle + (this->step_size*this->dir);
+            this->steps_taken++;
         }
         else{ //if (!this->pulse && (this->t - this->t_prev)>this->pul_delay){
             digitalWrite(this->pul_pin,1);
             this->pulse = 1;
-            this->steps_taken++;
         }
     }
 
     void change_speed(float spd){
         this->pul_delay = map(spd,0.0,1.0,this->pulse_max,this->pulse_min);
+    }
+
+    void set_limits(float lower_limit, float upper_limit){
+      this->lower_limit = lower_limit;
+      this->upper_limit = upper_limit;
     }
 };
 
@@ -181,10 +217,9 @@ RobotJoint joints[6] = {RobotJoint(joint1PUL,joint1DIR, (1.0/pulse1Rev)*2.0*pi, 
                         RobotJoint(joint5PUL,joint5DIR, (1.0/pulse5Rev)*2.0*pi, "5"),
                         RobotJoint(joint6PUL,joint6DIR, (1.0/pulse6Rev)*2.0*pi, "6")};
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 // ROS Definitions
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Joint 1 callback
+///////////////////////////////////////////////////////////////////////////////////////////
 ros::NodeHandle  nh;
 
 void AR3ControlCallback(const teensy::ar3_control &AR3_Control_Data){
@@ -206,9 +241,9 @@ ros::Subscriber<teensy::ar3_control> AR3ControlSub("/AR3/Control",& AR3ControlCa
 ar3::ar3_feedback AR3FeedbackData;
 ros::Publisher AR3FeedbackPub("/AR3/Feedback", &AR3FeedbackData);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 //  Setup
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 void setup() {
     // Stepper Motors
     pinMode(joint1PUL,OUTPUT);
@@ -235,6 +270,13 @@ void setup() {
     pinMode(joint1LIM,INPUT_PULLUP);
 
     gripper_servo.attach(21,500,2400);
+
+    joints[0].set_limits(-1.57,1.57);
+    joints[1].set_limits(-0.5,0.5);
+    joints[2].set_limits(-0.5,1.8);
+    joints[3].set_limits(-1.57,1.57);
+    joints[4].set_limits(-1.4,1.4);
+    joints[5].set_limits(-1.57,1.57);
     
     // Ros subscribers
     nh.initNode();
@@ -245,9 +287,9 @@ void setup() {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 //  Main Loop
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
     // Runtime parameters
     t = micros();
@@ -259,16 +301,13 @@ void loop() {
       AR3FeedbackData.encoder_pulses[1] = int(newPosition1);
       oldPosition1 = newPosition1;
     }
-
-    /////////////////////////////////////////////
-    //  State machine
-    /////////////////////////////////////////////
     
     // E-Stop state
     if (ePinValue){
         if ((t-t_old) > (pub_freq)){
             AR3FeedbackData.eStop = 1;
             AR3FeedbackData.running = 0;
+            AR3FeedbackData.gripper_angle = gripper_angle;
     
             for (int idx=0;idx<6;idx++){
               AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
@@ -288,17 +327,36 @@ void loop() {
         AR3FeedbackData.running = 1;
 
         gripper_servo.write(gripper_angle);
-        
 
         for (int idx=0;idx<6;idx++){
+          if (joints[idx].new_goal==1){
+            max_steps_to_go = 0;
+            for (int j=0;j<6;j++){
+              if (joints[idx].steps_to_go > max_steps_to_go){
+                max_steps_to_go = joints[idx].steps_to_go;
+              }
+            }
+            for (int j=0;j<6;j++){
+              if (joints[idx].steps_to_go == max_steps_to_go){
+                interp_skips[idx] = 0;
+              }
+              else{
+                interp_skips[idx] = int((max_steps_to_go/joints[idx].steps_to_go));
+              }
+            }
+            break;
+          }
+        }
+        for (int idx=0;idx<6;idx++){
           joints[idx].change_speed(joint_speed);
-          joints[idx].update_position();
+          joints[idx].update_position(interp_skips[idx]);
         }
             
         // Publish the arduinos current angle value for debugging purposes
         if ((t-t_old) > (pub_freq)){
             AR3FeedbackData.eStop = 0;
             AR3FeedbackData.running = 1;
+            AR3FeedbackData.gripper_angle = gripper_angle;
     
             for (int idx=0;idx<6;idx++){
               AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
@@ -311,14 +369,13 @@ void loop() {
             t_old = t;
         }
     }
-    
+
     // Update subscribers
     nh.spinOnce();
 }
 
 
 float edgeAngle(float angle1, float angle2){
-    float vertex0[2] = {0.0,0.0};
     float vertex1[2];
     float vertex2[2];
     vertex1[0] = cos(angle1);

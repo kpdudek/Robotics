@@ -8,14 +8,14 @@ import struct
 
 
 class ar3_feedback(genpy.Message):
-  _md5sum = "89d9497c396e2b4e5491efb4741ef6f1"
+  _md5sum = "64163ea4ea47214d9da1c0355fe48ee5"
   _type = "ar3/ar3_feedback"
   _has_header = False  # flag to mark the presence of a Header object
   _full_text = """int8 eStop
 int8 homed
 int8 resting
 int8 running
-int8 gripper_closed
+int8 gripper_angle
 
 int64[6] encoder_pulses
 float64[6] joint_angles
@@ -24,7 +24,7 @@ float64[6] setpoint_angles
 
 
 """
-  __slots__ = ['eStop','homed','resting','running','gripper_closed','encoder_pulses','joint_angles','setpoint_angles']
+  __slots__ = ['eStop','homed','resting','running','gripper_angle','encoder_pulses','joint_angles','setpoint_angles']
   _slot_types = ['int8','int8','int8','int8','int8','int64[6]','float64[6]','float64[6]']
 
   def __init__(self, *args, **kwds):
@@ -35,7 +35,7 @@ float64[6] setpoint_angles
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       eStop,homed,resting,running,gripper_closed,encoder_pulses,joint_angles,setpoint_angles
+       eStop,homed,resting,running,gripper_angle,encoder_pulses,joint_angles,setpoint_angles
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -52,8 +52,8 @@ float64[6] setpoint_angles
         self.resting = 0
       if self.running is None:
         self.running = 0
-      if self.gripper_closed is None:
-        self.gripper_closed = 0
+      if self.gripper_angle is None:
+        self.gripper_angle = 0
       if self.encoder_pulses is None:
         self.encoder_pulses = [0] * 6
       if self.joint_angles is None:
@@ -65,7 +65,7 @@ float64[6] setpoint_angles
       self.homed = 0
       self.resting = 0
       self.running = 0
-      self.gripper_closed = 0
+      self.gripper_angle = 0
       self.encoder_pulses = [0] * 6
       self.joint_angles = [0.] * 6
       self.setpoint_angles = [0.] * 6
@@ -83,7 +83,7 @@ float64[6] setpoint_angles
     """
     try:
       _x = self
-      buff.write(_get_struct_5b().pack(_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_closed))
+      buff.write(_get_struct_5b().pack(_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_angle))
       buff.write(_get_struct_6q().pack(*self.encoder_pulses))
       buff.write(_get_struct_6d().pack(*self.joint_angles))
       buff.write(_get_struct_6d().pack(*self.setpoint_angles))
@@ -101,7 +101,7 @@ float64[6] setpoint_angles
       _x = self
       start = end
       end += 5
-      (_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_closed,) = _get_struct_5b().unpack(str[start:end])
+      (_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_angle,) = _get_struct_5b().unpack(str[start:end])
       start = end
       end += 48
       self.encoder_pulses = _get_struct_6q().unpack(str[start:end])
@@ -124,7 +124,7 @@ float64[6] setpoint_angles
     """
     try:
       _x = self
-      buff.write(_get_struct_5b().pack(_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_closed))
+      buff.write(_get_struct_5b().pack(_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_angle))
       buff.write(self.encoder_pulses.tostring())
       buff.write(self.joint_angles.tostring())
       buff.write(self.setpoint_angles.tostring())
@@ -143,7 +143,7 @@ float64[6] setpoint_angles
       _x = self
       start = end
       end += 5
-      (_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_closed,) = _get_struct_5b().unpack(str[start:end])
+      (_x.eStop, _x.homed, _x.resting, _x.running, _x.gripper_angle,) = _get_struct_5b().unpack(str[start:end])
       start = end
       end += 48
       self.encoder_pulses = numpy.frombuffer(str[start:end], dtype=numpy.int64, count=6)

@@ -27,9 +27,9 @@
     :initarg :running
     :type cl:fixnum
     :initform 0)
-   (gripper_closed
-    :reader gripper_closed
-    :initarg :gripper_closed
+   (gripper_angle
+    :reader gripper_angle
+    :initarg :gripper_angle
     :type cl:fixnum
     :initform 0)
    (encoder_pulses
@@ -77,10 +77,10 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ar3-msg:running-val is deprecated.  Use ar3-msg:running instead.")
   (running m))
 
-(cl:ensure-generic-function 'gripper_closed-val :lambda-list '(m))
-(cl:defmethod gripper_closed-val ((m <ar3_feedback>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ar3-msg:gripper_closed-val is deprecated.  Use ar3-msg:gripper_closed instead.")
-  (gripper_closed m))
+(cl:ensure-generic-function 'gripper_angle-val :lambda-list '(m))
+(cl:defmethod gripper_angle-val ((m <ar3_feedback>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ar3-msg:gripper_angle-val is deprecated.  Use ar3-msg:gripper_angle instead.")
+  (gripper_angle m))
 
 (cl:ensure-generic-function 'encoder_pulses-val :lambda-list '(m))
 (cl:defmethod encoder_pulses-val ((m <ar3_feedback>))
@@ -110,7 +110,7 @@
   (cl:let* ((signed (cl:slot-value msg 'running)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
     (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
     )
-  (cl:let* ((signed (cl:slot-value msg 'gripper_closed)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
+  (cl:let* ((signed (cl:slot-value msg 'gripper_angle)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
     (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
     )
   (cl:map cl:nil #'(cl:lambda (ele) (cl:let* ((signed ele) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 18446744073709551616) signed)))
@@ -161,7 +161,7 @@
       (cl:setf (cl:slot-value msg 'running) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
     (cl:let ((unsigned 0))
       (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'gripper_closed) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
+      (cl:setf (cl:slot-value msg 'gripper_angle) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
   (cl:setf (cl:slot-value msg 'encoder_pulses) (cl:make-array 6))
   (cl:let ((vals (cl:slot-value msg 'encoder_pulses)))
     (cl:dotimes (i 6)
@@ -211,16 +211,16 @@
   "ar3/ar3_feedback")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<ar3_feedback>)))
   "Returns md5sum for a message object of type '<ar3_feedback>"
-  "89d9497c396e2b4e5491efb4741ef6f1")
+  "64163ea4ea47214d9da1c0355fe48ee5")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'ar3_feedback)))
   "Returns md5sum for a message object of type 'ar3_feedback"
-  "89d9497c396e2b4e5491efb4741ef6f1")
+  "64163ea4ea47214d9da1c0355fe48ee5")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<ar3_feedback>)))
   "Returns full string definition for message of type '<ar3_feedback>"
-  (cl:format cl:nil "int8 eStop~%int8 homed~%int8 resting~%int8 running~%int8 gripper_closed~%~%int64[6] encoder_pulses~%float64[6] joint_angles~%float64[6] setpoint_angles~%~%~%~%~%~%"))
+  (cl:format cl:nil "int8 eStop~%int8 homed~%int8 resting~%int8 running~%int8 gripper_angle~%~%int64[6] encoder_pulses~%float64[6] joint_angles~%float64[6] setpoint_angles~%~%~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'ar3_feedback)))
   "Returns full string definition for message of type 'ar3_feedback"
-  (cl:format cl:nil "int8 eStop~%int8 homed~%int8 resting~%int8 running~%int8 gripper_closed~%~%int64[6] encoder_pulses~%float64[6] joint_angles~%float64[6] setpoint_angles~%~%~%~%~%~%"))
+  (cl:format cl:nil "int8 eStop~%int8 homed~%int8 resting~%int8 running~%int8 gripper_angle~%~%int64[6] encoder_pulses~%float64[6] joint_angles~%float64[6] setpoint_angles~%~%~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <ar3_feedback>))
   (cl:+ 0
      1
@@ -239,7 +239,7 @@
     (cl:cons ':homed (homed msg))
     (cl:cons ':resting (resting msg))
     (cl:cons ':running (running msg))
-    (cl:cons ':gripper_closed (gripper_closed msg))
+    (cl:cons ':gripper_angle (gripper_angle msg))
     (cl:cons ':encoder_pulses (encoder_pulses msg))
     (cl:cons ':joint_angles (joint_angles msg))
     (cl:cons ':setpoint_angles (setpoint_angles msg))

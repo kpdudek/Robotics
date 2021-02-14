@@ -22,7 +22,7 @@ class ar3_feedback {
       this.homed = null;
       this.resting = null;
       this.running = null;
-      this.gripper_closed = null;
+      this.gripper_angle = null;
       this.encoder_pulses = null;
       this.joint_angles = null;
       this.setpoint_angles = null;
@@ -52,11 +52,11 @@ class ar3_feedback {
       else {
         this.running = 0;
       }
-      if (initObj.hasOwnProperty('gripper_closed')) {
-        this.gripper_closed = initObj.gripper_closed
+      if (initObj.hasOwnProperty('gripper_angle')) {
+        this.gripper_angle = initObj.gripper_angle
       }
       else {
-        this.gripper_closed = 0;
+        this.gripper_angle = 0;
       }
       if (initObj.hasOwnProperty('encoder_pulses')) {
         this.encoder_pulses = initObj.encoder_pulses
@@ -89,8 +89,8 @@ class ar3_feedback {
     bufferOffset = _serializer.int8(obj.resting, buffer, bufferOffset);
     // Serialize message field [running]
     bufferOffset = _serializer.int8(obj.running, buffer, bufferOffset);
-    // Serialize message field [gripper_closed]
-    bufferOffset = _serializer.int8(obj.gripper_closed, buffer, bufferOffset);
+    // Serialize message field [gripper_angle]
+    bufferOffset = _serializer.int8(obj.gripper_angle, buffer, bufferOffset);
     // Check that the constant length array field [encoder_pulses] has the right length
     if (obj.encoder_pulses.length !== 6) {
       throw new Error('Unable to serialize array field encoder_pulses - length must be 6')
@@ -124,8 +124,8 @@ class ar3_feedback {
     data.resting = _deserializer.int8(buffer, bufferOffset);
     // Deserialize message field [running]
     data.running = _deserializer.int8(buffer, bufferOffset);
-    // Deserialize message field [gripper_closed]
-    data.gripper_closed = _deserializer.int8(buffer, bufferOffset);
+    // Deserialize message field [gripper_angle]
+    data.gripper_angle = _deserializer.int8(buffer, bufferOffset);
     // Deserialize message field [encoder_pulses]
     data.encoder_pulses = _arrayDeserializer.int64(buffer, bufferOffset, 6)
     // Deserialize message field [joint_angles]
@@ -146,7 +146,7 @@ class ar3_feedback {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '89d9497c396e2b4e5491efb4741ef6f1';
+    return '64163ea4ea47214d9da1c0355fe48ee5';
   }
 
   static messageDefinition() {
@@ -156,7 +156,7 @@ class ar3_feedback {
     int8 homed
     int8 resting
     int8 running
-    int8 gripper_closed
+    int8 gripper_angle
     
     int64[6] encoder_pulses
     float64[6] joint_angles
@@ -202,11 +202,11 @@ class ar3_feedback {
       resolved.running = 0
     }
 
-    if (msg.gripper_closed !== undefined) {
-      resolved.gripper_closed = msg.gripper_closed;
+    if (msg.gripper_angle !== undefined) {
+      resolved.gripper_angle = msg.gripper_angle;
     }
     else {
-      resolved.gripper_closed = 0
+      resolved.gripper_angle = 0
     }
 
     if (msg.encoder_pulses !== undefined) {

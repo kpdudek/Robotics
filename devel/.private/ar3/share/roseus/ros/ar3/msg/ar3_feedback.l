@@ -14,7 +14,7 @@
 
 (defclass ar3::ar3_feedback
   :super ros::object
-  :slots (_eStop _homed _resting _running _gripper_closed _encoder_pulses _joint_angles _setpoint_angles ))
+  :slots (_eStop _homed _resting _running _gripper_angle _encoder_pulses _joint_angles _setpoint_angles ))
 
 (defmethod ar3::ar3_feedback
   (:init
@@ -23,7 +23,7 @@
     ((:homed __homed) 0)
     ((:resting __resting) 0)
     ((:running __running) 0)
-    ((:gripper_closed __gripper_closed) 0)
+    ((:gripper_angle __gripper_angle) 0)
     ((:encoder_pulses __encoder_pulses) (make-array 6 :initial-element 0 :element-type :integer))
     ((:joint_angles __joint_angles) (make-array 6 :initial-element 0.0 :element-type :float))
     ((:setpoint_angles __setpoint_angles) (make-array 6 :initial-element 0.0 :element-type :float))
@@ -33,7 +33,7 @@
    (setq _homed (round __homed))
    (setq _resting (round __resting))
    (setq _running (round __running))
-   (setq _gripper_closed (round __gripper_closed))
+   (setq _gripper_angle (round __gripper_angle))
    (setq _encoder_pulses __encoder_pulses)
    (setq _joint_angles __joint_angles)
    (setq _setpoint_angles __setpoint_angles)
@@ -50,9 +50,9 @@
   (:running
    (&optional __running)
    (if __running (setq _running __running)) _running)
-  (:gripper_closed
-   (&optional __gripper_closed)
-   (if __gripper_closed (setq _gripper_closed __gripper_closed)) _gripper_closed)
+  (:gripper_angle
+   (&optional __gripper_angle)
+   (if __gripper_angle (setq _gripper_angle __gripper_angle)) _gripper_angle)
   (:encoder_pulses
    (&optional __encoder_pulses)
    (if __encoder_pulses (setq _encoder_pulses __encoder_pulses)) _encoder_pulses)
@@ -73,7 +73,7 @@
     1
     ;; int8 _running
     1
-    ;; int8 _gripper_closed
+    ;; int8 _gripper_angle
     1
     ;; int64[6] _encoder_pulses
     (* 8    6)
@@ -94,8 +94,8 @@
        (write-byte _resting s)
      ;; int8 _running
        (write-byte _running s)
-     ;; int8 _gripper_closed
-       (write-byte _gripper_closed s)
+     ;; int8 _gripper_angle
+       (write-byte _gripper_angle s)
      ;; int64[6] _encoder_pulses
      (dotimes (i 6)
 #+(or :alpha :irix6 :x86_64)
@@ -134,9 +134,9 @@
    ;; int8 _running
      (setq _running (sys::peek buf ptr- :char)) (incf ptr- 1)
      (if (> _running 127) (setq _running (- _running 256)))
-   ;; int8 _gripper_closed
-     (setq _gripper_closed (sys::peek buf ptr- :char)) (incf ptr- 1)
-     (if (> _gripper_closed 127) (setq _gripper_closed (- _gripper_closed 256)))
+   ;; int8 _gripper_angle
+     (setq _gripper_angle (sys::peek buf ptr- :char)) (incf ptr- 1)
+     (if (> _gripper_angle 127) (setq _gripper_angle (- _gripper_angle 256)))
    ;; int64[6] _encoder_pulses
    (dotimes (i (length _encoder_pulses))
 #+(or :alpha :irix6 :x86_64)
@@ -163,14 +163,14 @@
    self)
   )
 
-(setf (get ar3::ar3_feedback :md5sum-) "89d9497c396e2b4e5491efb4741ef6f1")
+(setf (get ar3::ar3_feedback :md5sum-) "64163ea4ea47214d9da1c0355fe48ee5")
 (setf (get ar3::ar3_feedback :datatype-) "ar3/ar3_feedback")
 (setf (get ar3::ar3_feedback :definition-)
       "int8 eStop
 int8 homed
 int8 resting
 int8 running
-int8 gripper_closed
+int8 gripper_angle
 
 int64[6] encoder_pulses
 float64[6] joint_angles
@@ -183,6 +183,6 @@ float64[6] setpoint_angles
 
 
 
-(provide :ar3/ar3_feedback "89d9497c396e2b4e5491efb4741ef6f1")
+(provide :ar3/ar3_feedback "64163ea4ea47214d9da1c0355fe48ee5")
 
 

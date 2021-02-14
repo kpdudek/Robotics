@@ -87,9 +87,19 @@ class AR3Controller(QMainWindow):
         self.goto_button.clicked.connect(self.goto)
         self.rest_button.clicked.connect(self.rest)
         self.zero_button.clicked.connect(self.zero)
+        self.move_gripper_button.clicked.connect(self.move_gripper)
+
+        self.joint_spinboxes = [self.joint_1_setpoint,self.joint_2_setpoint,self.joint_3_setpoint,
+                                self.joint_4_setpoint,self.joint_5_setpoint,self.joint_6_setpoint]
+        self.joint_lcds = [self.j1_lcd,self.j2_lcd,self.j3_lcd,self.j4_lcd,self.j5_lcd,self.j6_lcd]
 
         # Show main window
         self.show()
+
+    def move_gripper(self):
+        self.gripper_angle = self.gripper_angle_spinbox.value()
+        self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
+        self.robot_controller.send_joints()
 
     def goto(self):
         angles = [self.joint_1_setpoint.value(),self.joint_2_setpoint.value(),
@@ -110,10 +120,12 @@ class AR3Controller(QMainWindow):
 
         self.robot_controller.AR3Control.speed = self.speed
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle        
-        self.robot_controller.AR3Control.joint_angles = [0.0,1.355,1.8,0.0,5.1,0.0]
+        self.robot_controller.AR3Control.joint_angles = [1.57,-.4,1.3,0.0,1.0,0.0]
         self.robot_controller.send_joints()
 
     def zero(self):
+        # for spinbox in self.joint_spinboxes:
+        #     spinbox.setValue(0.0)
         self.gripper_angle = self.gripper_angle_spinbox.value()
         self.speed = self.speed_spinbox.value()
 
@@ -123,26 +135,17 @@ class AR3Controller(QMainWindow):
         self.robot_controller.send_joints()
     
     def update_feedback_label(self,data):
-        label_str = ''
-        label_str += f'E-Stopped: {data.eStop}\n'
-        label_str += f'Homed: {data.homed}\n'
-        label_str += f'Resting: {data.resting}\n'
-        label_str += f'Running: {data.running}\n'
-        label_str += f'Gripper State: {data.gripper_closed}\n'
-        label_str += f'Encoder Pulses: {data.encoder_pulses}\n'
+        idx = 0
+        for lcd in self.joint_lcds:
+            lcd.display(data.joint_angles[idx])
+            idx += 1
+
+        self.gripper_lcd.display(data.gripper_angle)
         
-        label_str += 'Joint Angles:'
-        for angle in data.joint_angles:
-            label_str += ' %.2f'%(angle)
-        label_str += '\n'
-
-        label_str += 'Setpoint Angles:'
-        for angle in data.setpoint_angles:
-            label_str += ' %.2f'%(angle)
-        label_str += '\n'
-
-        self.feedback_label.setText(label_str)
-
+        if data.eStop:
+            self.state_label.setText(f"E-STOP PRESSED")
+        elif data.running:
+            self.state_label.setText(f"RUNNING")
 
 def main():
     # create pyqt5 app
