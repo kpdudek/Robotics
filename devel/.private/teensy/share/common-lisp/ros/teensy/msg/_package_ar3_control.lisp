@@ -5,8 +5,10 @@
           RUN
           REST-VAL
           REST
-          CLOSE_GRIPPER-VAL
-          CLOSE_GRIPPER
+          GRIPPER_ANGLE-VAL
+          GRIPPER_ANGLE
+          SPEED-VAL
+          SPEED
           JOINT_ANGLES-VAL
           JOINT_ANGLES
 ))

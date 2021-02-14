@@ -2,7 +2,7 @@
 """ Library for creating 2D graphs, and then determining free space and connections to generate a roadmap """
 
 import sys
-sys.path.insert(0,'..')
+sys.path.insert(0,'../src/')
 import roadmap_builder as rb 
 
 roadmap = rb.RoadmapBuilder()

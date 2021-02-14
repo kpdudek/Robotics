@@ -8,6 +8,8 @@
 
 # modified environment variables
 export CMAKE_PREFIX_PATH="/home/kurt/Robotics/devel/.private/rrbot_gazebo:$CMAKE_PREFIX_PATH"
-export PWD="/home/kurt/Robotics/build/rrbot_gazebo"
+export LD_LIBRARY_PATH="/home/kurt/Robotics/devel/.private/rrbot_gazebo/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/home/kurt/Robotics/devel/.private/rrbot_gazebo/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PWD='/home/kurt/Robotics/build/rrbot_gazebo'
 export ROSLISP_PACKAGE_DIRECTORIES="/home/kurt/Robotics/devel/.private/rrbot_gazebo/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
 export ROS_PACKAGE_PATH="/home/kurt/Robotics/src/rrbot_gazebo:$ROS_PACKAGE_PATH"

@@ -2,7 +2,7 @@
 """ A first template for a PID controller """
 
 import sys
-sys.path.insert(0,'..')
+sys.path.insert(0,'../src/')
 import priority_queue as pq
 
 

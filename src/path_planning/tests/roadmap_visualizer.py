@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """ A first template for a PID controller """
 import sys
-sys.path.insert(0,'..')
+sys.path.insert(0,'../src/')
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt

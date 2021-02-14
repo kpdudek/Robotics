@@ -37,7 +37,7 @@
 float pi = 3.1415926;
 
 // Varables used to store time both current and 'stopwatch' times
-unsigned long int t_old=0, t=0, pub_freq = 2000000;
+unsigned long int t_old=0, t=0, pub_freq = 500000;
 
 // Number of pulses to rotate a joint 2*PI radians. Accounts for settings on the stepper driver and
 // all mechanical ratios. Inline comments denote the parameters used in the calculation.
@@ -53,11 +53,6 @@ float pulse6Rev = 800.0*(19.0+(38.0/187.0)); // pulse/rev, gearbox;
 // severely affect the frequency at which the main loop runs
 int pulDelay = 100; // default is 50 for max speed
 
-// Joint angle variables
-float SetAngles[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
-float AngleErrors[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
-float JointAngles[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
-
 // Encoder pins and classes
 #define Enc1_Pin1 22 // encoder1 CLK pin
 #define Enc1_Pin2 23  // encoder1 DT pin
@@ -67,12 +62,6 @@ long oldPosition1  = -1, newPosition1 = 0;
 // Fuzzy equality to prevent jitter in the motors. This value is when the joint is 'close enough'
 // to its setpoint
 float angleTol = 0.0005;
-
-// Acceleration time. Time to add between pulses to "decelerate" the joint
-float dist[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
-float accelTime[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
-float t_old_accel[6] = {0.0,0.0,0.0,0.0,0.0,0.0};
-float ka = 800.0, thresh = 0.785;
 
 // Current state of the e-stop pin. Default is True meaning no movements will not occur
 int ePinValue = 1;
@@ -85,7 +74,112 @@ int rest = 0;
 
 // Gripper positions
 Servo gripper_servo;
-int gripper_cmd = 0, closed_pos = 0, opened_pos = 80;
+//int gripper_cmd = 0, closed_pos = 0, opened_pos = 80;
+int gripper_angle = 0;
+
+float joint_speed;
+
+///////////////////////////////////////////////////////////////////////////
+// Class declarations
+///////////////////////////////////////////////////////////////////////////
+class RobotJoint{
+  public:
+    char id[20];
+    int pul_pin = -1, dir_pin = -1;
+    int stopped = 1;
+    int pulse = 0;
+    int dir = 1;
+    
+    float step_size;
+    int steps_to_go;
+    int steps_taken = 0;
+    
+    unsigned int pul_delay = 0, pulse_min = 60, pulse_max = 800;
+    unsigned int accel_delay = 0;
+    
+    float spd = 1.0;
+    
+    float lower_limit = -1.58, upper_limit = 1.58;
+
+    float setpoint = 0.0, prev_setpoint = -1.0;;
+    float angle = 0.0;
+    float error = 0.0;
+
+    float tolerance = 0.005;
+
+    unsigned long int t = 0, t_prev = 0;
+  
+    RobotJoint(int pul_pin,int dir_pin, float step_size, char* id){
+      this->pul_pin = pul_pin;
+      this->dir_pin = dir_pin;
+      this->step_size = step_size;
+      strcpy(this->id,id);
+
+      this->change_speed(this->spd);
+    }
+    
+    void update_position(void){
+        this->t = micros();
+
+        if (this->prev_setpoint != this->setpoint){
+          this->steps_taken = 0;
+          this->prev_setpoint = this->setpoint;
+        }
+        
+        this->error = this->setpoint - this->angle;
+        this->steps_to_go = int(abs(this->error / this->step_size));
+
+        if (this->error < -this->tolerance){
+            this->dir = -1;
+        }
+        else if (this->error > this->tolerance){
+            this->dir = 1;
+        }
+        else{
+            return;
+        }
+
+        if (this->dir == 1){
+            digitalWrite(this->dir_pin,HIGH);
+        }
+        else{
+            digitalWrite(this->dir_pin,LOW);
+        }
+
+        if (this->steps_to_go < 1000){ // Decellerate
+          this->accel_delay = int((1.0/(this->steps_to_go/20000.0)));
+        }
+        else if (this->steps_taken < 1000){ // Accelerate
+          this->accel_delay = int((1.0/(this->steps_taken/20000.0)));
+        }
+        else{ // Coast at specified speed
+          this->accel_delay = 0;
+        }
+        
+        if (this->pulse && (this->t - this->t_prev)>(this->pul_delay+this->accel_delay)){
+            digitalWrite(this->pul_pin,0);
+            this->t_prev = this->t;
+            this->pulse = 0;
+            this->angle = this->angle + (this->step_size*this->dir);
+        }
+        else{ //if (!this->pulse && (this->t - this->t_prev)>this->pul_delay){
+            digitalWrite(this->pul_pin,1);
+            this->pulse = 1;
+            this->steps_taken++;
+        }
+    }
+
+    void change_speed(float spd){
+        this->pul_delay = map(spd,0.0,1.0,this->pulse_max,this->pulse_min);
+    }
+};
+
+RobotJoint joints[6] = {RobotJoint(joint1PUL,joint1DIR, (1.0/pulse1Rev)*2.0*pi, "1"),
+                        RobotJoint(joint2PUL,joint2DIR, (1.0/pulse2Rev)*2.0*pi, "2"),
+                        RobotJoint(joint3PUL,joint3DIR, (1.0/pulse3Rev)*2.0*pi, "3"),
+                        RobotJoint(joint4PUL,joint4DIR, (1.0/pulse4Rev)*2.0*pi, "4"),
+                        RobotJoint(joint5PUL,joint5DIR, (1.0/pulse5Rev)*2.0*pi, "5"),
+                        RobotJoint(joint6PUL,joint6DIR, (1.0/pulse6Rev)*2.0*pi, "6")};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Definitions
@@ -94,11 +188,17 @@ int gripper_cmd = 0, closed_pos = 0, opened_pos = 80;
 ros::NodeHandle  nh;
 
 void AR3ControlCallback(const teensy::ar3_control &AR3_Control_Data){
-    memcpy(SetAngles,AR3_Control_Data.joint_angles,sizeof(SetAngles));
     home = AR3_Control_Data.home;
     run = AR3_Control_Data.run;
     rest = AR3_Control_Data.rest;
-    gripper_cmd = AR3_Control_Data.close_gripper;
+    
+    gripper_angle = AR3_Control_Data.gripper_angle;
+    joint_speed = AR3_Control_Data.speed;
+    
+    for (int idx=0;idx<6;idx++){
+      joints[idx].setpoint = AR3_Control_Data.joint_angles[idx];
+    }
+    
 }
 
 ros::Subscriber<teensy::ar3_control> AR3ControlSub("/AR3/Control",& AR3ControlCallback);
@@ -135,7 +235,7 @@ void setup() {
     pinMode(joint1LIM,INPUT_PULLUP);
 
     gripper_servo.attach(21,500,2400);
-
+    
     // Ros subscribers
     nh.initNode();
     nh.subscribe(AR3ControlSub);
@@ -143,6 +243,7 @@ void setup() {
     // Debug info
     nh.advertise(AR3FeedbackPub);
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Main Loop
@@ -157,20 +258,6 @@ void loop() {
     if (newPosition1 != oldPosition1) {
       AR3FeedbackData.encoder_pulses[1] = int(newPosition1);
       oldPosition1 = newPosition1;
-      JointAngles[1] = (float(newPosition1) / (512.0*50.0*4.0)) * 2.0*pi;
-      // Ensure angle in range 0 --> 360
-      if(JointAngles[1] >= (2.0*pi)){JointAngles[1] = JointAngles[1] - (2.0*pi);}
-      if(JointAngles[1] < 0.0){JointAngles[1] = (2.0*pi) + JointAngles[1];}
-    }
-
-    // Gripper operation
-    if (gripper_cmd == 0){
-      gripper_servo.write(opened_pos);
-      AR3FeedbackData.gripper_closed = 0;
-    }
-    else{
-      gripper_servo.write(closed_pos);
-      AR3FeedbackData.gripper_closed = 1;
     }
 
     /////////////////////////////////////////////
@@ -182,117 +269,44 @@ void loop() {
         if ((t-t_old) > (pub_freq)){
             AR3FeedbackData.eStop = 1;
             AR3FeedbackData.running = 0;
-            arry_cpy(AR3FeedbackData.joint_angles,JointAngles,6);
-            arry_cpy(AR3FeedbackData.setpoint_angles,SetAngles,6);
+    
+            for (int idx=0;idx<6;idx++){
+              AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
+            }
+            
+            for (int idx=0;idx<6;idx++){
+              AR3FeedbackData.setpoint_angles[idx] = joints[idx].setpoint;
+            }
             AR3FeedbackPub.publish(&AR3FeedbackData);
             t_old = t;
         }
     }
 
     // Run state
-    else if (!ePinValue && run){
+    else {
         AR3FeedbackData.eStop = 0;
         AR3FeedbackData.running = 1;
 
-        //TODO: Function that calculates all accel times
+        gripper_servo.write(gripper_angle);
         
-        // Joint 1
-        dist[0] = abs(edgeAngle(SetAngles[0],JointAngles[0]));
-//        if (dist[0] > 3.14){dist[0] = dist[0] - 3.14;}
-        if(dist[0]<thresh){accelTime[0] = pow((1.0/dist[0]),2.0);}
-        else{accelTime[0] = 0.0;}
 
-        if ((t-t_old_accel[0]) > accelTime[0]){
-            AngleErrors[0] = SetAngles[0] - JointAngles[0];
-            moveJoint(joint1PUL,joint1DIR,&JointAngles[0],AngleErrors[0],pulse1Rev);
-            t_old_accel[0] = t;
+        for (int idx=0;idx<6;idx++){
+          joints[idx].change_speed(joint_speed);
+          joints[idx].update_position();
         }
-
-        // Joint 2
-        dist[1] = abs(edgeAngle(SetAngles[1],JointAngles[1]));
-//        if (dist[1] > 3.14){dist[1] = dist[1] - 3.14;}
-        if(dist[1]<thresh){accelTime[1] = pow((1.0/dist[1]),2.0);}
-        else{accelTime[1] = 0.0;}
-    
-        if ((t-t_old_accel[1]) > accelTime[1]){
-            AngleErrors[1] = SetAngles[1] - JointAngles[1];
-            cl_moveJoint(joint2PUL,joint2DIR,AngleErrors[1]);
-            t_old_accel[1] = t;
-        }
-        
-        //  Joint 3
-        dist[2] = abs(edgeAngle(SetAngles[2],JointAngles[2]));
-//        if (dist[2] > 3.14){dist[2] = dist[2] - 3.14;}
-        if(dist[2]<thresh){accelTime[2] = pow((1.0/dist[2]),2.0);}
-        else{accelTime[2] = 0.0;}
-
-        if ((t-t_old_accel[2]) > accelTime[2]){
-            AngleErrors[2] = SetAngles[2] - JointAngles[2];
-            moveJoint(joint3PUL,joint3DIR,&JointAngles[2],AngleErrors[2],pulse3Rev);
-            t_old_accel[2] = t;
-        }
-
-        //  Joint 4
-        AngleErrors[3] = SetAngles[3] - JointAngles[3];
-        moveJoint(joint4PUL,joint4DIR,&JointAngles[3],AngleErrors[3],pulse4Rev);
-
-        //  Joint 5
-        dist[4] = abs(edgeAngle(SetAngles[4],JointAngles[4]));
-//        if (dist[4] > 3.14){dist[4] = dist[4] - 3.14;}
-        if(dist[4]<thresh){accelTime[4] = pow((1.0/dist[4]),2.0);}
-        else{accelTime[4] = 0.0;}
-
-        if ((t-t_old_accel[4]) > accelTime[4]){
-            AngleErrors[4] = SetAngles[4] - JointAngles[4];
-            moveJoint(joint5PUL,joint5DIR,&JointAngles[4],AngleErrors[4],pulse5Rev);
-            t_old_accel[4] = t;
-        }
-
-        //  Joint 6
-        AngleErrors[5] = SetAngles[5] - JointAngles[5];
-        moveJoint(joint6PUL,joint6DIR,&JointAngles[5],AngleErrors[5],pulse6Rev);
-
+            
         // Publish the arduinos current angle value for debugging purposes
-        // COMMENT OUT FOR SPEED IMPROVEMENT
-        if ((t-t_old) > (pub_freq)){
-            arry_cpy(AR3FeedbackData.joint_angles,JointAngles,6);
-            arry_cpy(AR3FeedbackData.setpoint_angles,SetAngles,6);
-            AR3FeedbackPub.publish(&AR3FeedbackData);
-            t_old = t;
-        }
-    }
-
-    // Homing state
-    else if(!ePinValue && home){
-        AR3FeedbackData.running = 0;
-        AR3FeedbackData.eStop = 0;
-        limState = digitalRead(joint1LIM);
-        
-        if (!limState && !AR3FeedbackData.homed){
-            homeJoint(joint1PUL,joint1DIR,1);
-            AR3FeedbackData.homed = 0;
-        }
-        else{
-            JointAngles[0] = (2.0*pi)-(pi/2.0);
-            AR3FeedbackData.homed = 1;
-        }
-
-        if ((t-t_old) > (pub_freq)){
-            arry_cpy(AR3FeedbackData.joint_angles,JointAngles,6);
-            arry_cpy(AR3FeedbackData.setpoint_angles,SetAngles,6);
-            AR3FeedbackPub.publish(&AR3FeedbackData);
-            t_old = t;
-        }
-
-    }
-
-    // No state assigned and no E-Stop
-    else{
         if ((t-t_old) > (pub_freq)){
             AR3FeedbackData.eStop = 0;
-            AR3FeedbackData.running = 0;
-            arry_cpy(AR3FeedbackData.joint_angles,JointAngles,6);
-            arry_cpy(AR3FeedbackData.setpoint_angles,SetAngles,6);
+            AR3FeedbackData.running = 1;
+    
+            for (int idx=0;idx<6;idx++){
+              AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
+            }
+            
+            for (int idx=0;idx<6;idx++){
+              AR3FeedbackData.setpoint_angles[idx] = joints[idx].setpoint;
+            }
             AR3FeedbackPub.publish(&AR3FeedbackData);
             t_old = t;
         }
@@ -302,98 +316,8 @@ void loop() {
     nh.spinOnce();
 }
 
-////////////////////////////////////////////////////////////
-//  Send pulse to stepper motor
-//  Pass the pulse pin, direction pin, and desired direction
-//    --> 1: cw
-//    --> 0: ccw
-////////////////////////////////////////////////////////////
-void sendPulse(int pin, int dirPin, int dir) {
-  if (dir == 1){
-    digitalWrite(dirPin,LOW);
-  }
-  else{
-    digitalWrite(dirPin,HIGH);
-  }
-  
-  digitalWrite(pin,HIGH);
-  delayMicroseconds(pulDelay);
-  digitalWrite(pin,LOW);
-}
-
-void moveJoint(int pin, int dirPin, float* angle, float error, float pulRev) {
-    // Setpoint leads current
-    if(error > angleTol && error <= pi){
-        sendPulse(pin,dirPin,0);
-        *angle = *angle + ((1.0/pulRev)*(2.0*pi));
-    }
-    else if(error > angleTol){
-        sendPulse(pin,dirPin,1);
-        *angle = *angle - ((1.0/pulRev)*(2.0*pi));
-    }
-    // Setpoint trails current
-    else if(error < -angleTol && error >= -pi){
-        sendPulse(pin,dirPin,1);
-        *angle = *angle - ((1.0/pulRev)*(2.0*pi));
-    }
-    else if(error < -angleTol){
-        sendPulse(pin,dirPin,0);
-        *angle = *angle + ((1.0/pulRev)*(2.0*pi));
-    }
-    // Ensure angle in range 0 --> 360
-    if(*angle >= (2.0*pi)){*angle = *angle - (2.0*pi);}
-    if(*angle < 0.0){*angle = (2.0*pi) + *angle;}
-}
-
-void cl_moveJoint(int pin, int dirPin, float error) {
-    // Setpoint leads current
-    if(error > angleTol && error <= pi){
-        sendPulse(pin,dirPin,0);
-    }
-    else if(error > angleTol){
-        sendPulse(pin,dirPin,1);
-    }
-    // Setpoint trails current
-    else if(error < -angleTol && error >= -pi){
-        sendPulse(pin,dirPin,1);
-    }
-    else if(error < -angleTol){
-        sendPulse(pin,dirPin,0);
-    }
-}
-
-void homeJoint(int pin, int dirPin, int dir){
-    sendPulse(pin,dirPin,dir);
-    delayMicroseconds(400);
-}
-
-// Copys the contents of array 'local' into array 'ros'
-void arry_cpy(float ros[], float local[], int len) {
-  for(int i=0; i<len; i++) {
-    ros[i] = local[i];
-  }
-}
 
 float edgeAngle(float angle1, float angle2){
-    // function [edgeAngle]=edge_angle(vertex0,vertex1,vertex2,angleType)
-    // vec1=(vertex1-vertex0)/norm(vertex1-vertex0);%compute the normalized vector from vertex0 to vertex1.
-    // vec2=(vertex2-vertex0)/norm(vertex2-vertex0);%compute the normalized vector from vertex0 to vertex2.
-
-    // cosine_theta=vec1'*vec2;%compute the cosine value of the angle using the inner product of two vectors.
-    // sine_theta=[0 0 1]*cross([vec1;0],[vec2;0]);%compute the sine value of the angle.
-
-    // edgeAngle=atan2(sine_theta,cosine_theta);
-
-    // %compute the edge angle
-    // if strcmpi(angleType,'unsigned')
-    //     edgeAngle=mod(edgeAngle+2*pi,2*pi);
-    // elseif strcmpi(angleType,'signed')
-    //     return;
-    // else
-    //     disp('input error');
-    //     edgeAngle=NaN;
-    //     return;
-    // end
     float vertex0[2] = {0.0,0.0};
     float vertex1[2];
     float vertex2[2];
@@ -406,5 +330,4 @@ float edgeAngle(float angle1, float angle2){
     float sine_theta = vertex1[0]*vertex2[1]- vertex1[1]*vertex2[0];
     float edge_angle = atan2(sine_theta,cosine_theta);
     return edge_angle;
-
 }

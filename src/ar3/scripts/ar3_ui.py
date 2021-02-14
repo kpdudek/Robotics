@@ -92,20 +92,33 @@ class AR3Controller(QMainWindow):
         self.show()
 
     def goto(self):
-        angles = []
-        for widget in self.joint_values.children():
-            if isinstance(widget, QDoubleSpinBox):
-                # print(widget.value())
-                angles.append(widget.value())
-        print(angles)
+        angles = [self.joint_1_setpoint.value(),self.joint_2_setpoint.value(),
+                    self.joint_3_setpoint.value(),self.joint_4_setpoint.value(),
+                    self.joint_5_setpoint.value(),self.joint_6_setpoint.value()]
+
+        self.gripper_angle = self.gripper_angle_spinbox.value()
+        self.speed = self.speed_spinbox.value()
+
+        self.robot_controller.AR3Control.speed = self.speed
+        self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
         self.robot_controller.AR3Control.joint_angles = angles
         self.robot_controller.send_joints()
 
     def rest(self):
+        self.gripper_angle = self.gripper_angle_spinbox.value()
+        self.speed = self.speed_spinbox.value()
+
+        self.robot_controller.AR3Control.speed = self.speed
+        self.robot_controller.AR3Control.gripper_angle = self.gripper_angle        
         self.robot_controller.AR3Control.joint_angles = [0.0,1.355,1.8,0.0,5.1,0.0]
         self.robot_controller.send_joints()
 
     def zero(self):
+        self.gripper_angle = self.gripper_angle_spinbox.value()
+        self.speed = self.speed_spinbox.value()
+
+        self.robot_controller.AR3Control.speed = self.speed
+        self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
         self.robot_controller.AR3Control.joint_angles = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.robot_controller.send_joints()
     
@@ -117,8 +130,16 @@ class AR3Controller(QMainWindow):
         label_str += f'Running: {data.running}\n'
         label_str += f'Gripper State: {data.gripper_closed}\n'
         label_str += f'Encoder Pulses: {data.encoder_pulses}\n'
-        label_str += 'Joint Angles: %.2f %.2f %.2f %.2f %.2f %.2f\n'%(data.joint_angles[0],data.joint_angles[1],data.joint_angles[2],data.joint_angles[3],data.joint_angles[4],data.joint_angles[5])
-        label_str += 'Setpoint Angles: %.2f %.2f %.2f %.2f %.2f %.2f\n'%(data.setpoint_angles[0],data.setpoint_angles[1],data.setpoint_angles[2],data.setpoint_angles[3],data.setpoint_angles[4],data.setpoint_angles[5])
+        
+        label_str += 'Joint Angles:'
+        for angle in data.joint_angles:
+            label_str += ' %.2f'%(angle)
+        label_str += '\n'
+
+        label_str += 'Setpoint Angles:'
+        for angle in data.setpoint_angles:
+            label_str += ' %.2f'%(angle)
+        label_str += '\n'
 
         self.feedback_label.setText(label_str)
 

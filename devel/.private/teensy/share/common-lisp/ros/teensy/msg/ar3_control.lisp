@@ -22,11 +22,16 @@
     :initarg :rest
     :type cl:fixnum
     :initform 0)
-   (close_gripper
-    :reader close_gripper
-    :initarg :close_gripper
+   (gripper_angle
+    :reader gripper_angle
+    :initarg :gripper_angle
     :type cl:fixnum
     :initform 0)
+   (speed
+    :reader speed
+    :initarg :speed
+    :type cl:float
+    :initform 0.0)
    (joint_angles
     :reader joint_angles
     :initarg :joint_angles
@@ -57,10 +62,15 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader teensy-msg:rest-val is deprecated.  Use teensy-msg:rest instead.")
   (rest m))
 
-(cl:ensure-generic-function 'close_gripper-val :lambda-list '(m))
-(cl:defmethod close_gripper-val ((m <ar3_control>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader teensy-msg:close_gripper-val is deprecated.  Use teensy-msg:close_gripper instead.")
-  (close_gripper m))
+(cl:ensure-generic-function 'gripper_angle-val :lambda-list '(m))
+(cl:defmethod gripper_angle-val ((m <ar3_control>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader teensy-msg:gripper_angle-val is deprecated.  Use teensy-msg:gripper_angle instead.")
+  (gripper_angle m))
+
+(cl:ensure-generic-function 'speed-val :lambda-list '(m))
+(cl:defmethod speed-val ((m <ar3_control>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader teensy-msg:speed-val is deprecated.  Use teensy-msg:speed instead.")
+  (speed m))
 
 (cl:ensure-generic-function 'joint_angles-val :lambda-list '(m))
 (cl:defmethod joint_angles-val ((m <ar3_control>))
@@ -77,9 +87,18 @@
   (cl:let* ((signed (cl:slot-value msg 'rest)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
     (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
     )
-  (cl:let* ((signed (cl:slot-value msg 'close_gripper)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
+  (cl:let* ((signed (cl:slot-value msg 'gripper_angle)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
     (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
     )
+  (cl:let ((bits (roslisp-utils:encode-double-float-bits (cl:slot-value msg 'speed))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 32) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 40) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 48) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 56) bits) ostream))
   (cl:map cl:nil #'(cl:lambda (ele) (cl:let ((bits (roslisp-utils:encode-double-float-bits ele)))
     (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
@@ -104,7 +123,17 @@
       (cl:setf (cl:slot-value msg 'rest) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
     (cl:let ((unsigned 0))
       (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'close_gripper) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
+      (cl:setf (cl:slot-value msg 'gripper_angle) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
+    (cl:let ((bits 0))
+      (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 32) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 40) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 48) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 56) bits) (cl:read-byte istream))
+    (cl:setf (cl:slot-value msg 'speed) (roslisp-utils:decode-double-float-bits bits)))
   (cl:setf (cl:slot-value msg 'joint_angles) (cl:make-array 6))
   (cl:let ((vals (cl:slot-value msg 'joint_angles)))
     (cl:dotimes (i 6)
@@ -128,22 +157,23 @@
   "teensy/ar3_control")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<ar3_control>)))
   "Returns md5sum for a message object of type '<ar3_control>"
-  "9026d471c1270c3777015c75e131a561")
+  "208a9b5e1d8eccf1fe39655639adaa71")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'ar3_control)))
   "Returns md5sum for a message object of type 'ar3_control"
-  "9026d471c1270c3777015c75e131a561")
+  "208a9b5e1d8eccf1fe39655639adaa71")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<ar3_control>)))
   "Returns full string definition for message of type '<ar3_control>"
-  (cl:format cl:nil "int8 home~%int8 run~%int8 rest~%int8 close_gripper~%~%float64[6] joint_angles~%~%~%~%"))
+  (cl:format cl:nil "int8 home~%int8 run~%int8 rest~%~%int8 gripper_angle~%float64 speed~%~%float64[6] joint_angles~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'ar3_control)))
   "Returns full string definition for message of type 'ar3_control"
-  (cl:format cl:nil "int8 home~%int8 run~%int8 rest~%int8 close_gripper~%~%float64[6] joint_angles~%~%~%~%"))
+  (cl:format cl:nil "int8 home~%int8 run~%int8 rest~%~%int8 gripper_angle~%float64 speed~%~%float64[6] joint_angles~%~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <ar3_control>))
   (cl:+ 0
      1
      1
      1
      1
+     8
      0 (cl:reduce #'cl:+ (cl:slot-value msg 'joint_angles) :key #'(cl:lambda (ele) (cl:declare (cl:ignorable ele)) (cl:+ 8)))
 ))
 (cl:defmethod roslisp-msg-protocol:ros-message-to-list ((msg <ar3_control>))
@@ -152,6 +182,7 @@
     (cl:cons ':home (home msg))
     (cl:cons ':run (run msg))
     (cl:cons ':rest (rest msg))
-    (cl:cons ':close_gripper (close_gripper msg))
+    (cl:cons ':gripper_angle (gripper_angle msg))
+    (cl:cons ':speed (speed msg))
     (cl:cons ':joint_angles (joint_angles msg))
 ))

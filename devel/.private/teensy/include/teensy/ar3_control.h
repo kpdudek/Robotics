@@ -27,7 +27,8 @@ struct ar3_control_
     : home(0)
     , run(0)
     , rest(0)
-    , close_gripper(0)
+    , gripper_angle(0)
+    , speed(0.0)
     , joint_angles()  {
       joint_angles.assign(0.0);
   }
@@ -35,7 +36,8 @@ struct ar3_control_
     : home(0)
     , run(0)
     , rest(0)
-    , close_gripper(0)
+    , gripper_angle(0)
+    , speed(0.0)
     , joint_angles()  {
   (void)_alloc;
       joint_angles.assign(0.0);
@@ -52,8 +54,11 @@ struct ar3_control_
    typedef int8_t _rest_type;
   _rest_type rest;
 
-   typedef int8_t _close_gripper_type;
-  _close_gripper_type close_gripper;
+   typedef int8_t _gripper_angle_type;
+  _gripper_angle_type gripper_angle;
+
+   typedef double _speed_type;
+  _speed_type speed;
 
    typedef boost::array<double, 6>  _joint_angles_type;
   _joint_angles_type joint_angles;
@@ -90,7 +95,8 @@ bool operator==(const ::teensy::ar3_control_<ContainerAllocator1> & lhs, const :
   return lhs.home == rhs.home &&
     lhs.run == rhs.run &&
     lhs.rest == rhs.rest &&
-    lhs.close_gripper == rhs.close_gripper &&
+    lhs.gripper_angle == rhs.gripper_angle &&
+    lhs.speed == rhs.speed &&
     lhs.joint_angles == rhs.joint_angles;
 }
 
@@ -148,12 +154,12 @@ struct MD5Sum< ::teensy::ar3_control_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "9026d471c1270c3777015c75e131a561";
+    return "208a9b5e1d8eccf1fe39655639adaa71";
   }
 
   static const char* value(const ::teensy::ar3_control_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x9026d471c1270c37ULL;
-  static const uint64_t static_value2 = 0x77015c75e131a561ULL;
+  static const uint64_t static_value1 = 0x208a9b5e1d8eccf1ULL;
+  static const uint64_t static_value2 = 0xfe39655639adaa71ULL;
 };
 
 template<class ContainerAllocator>
@@ -175,7 +181,9 @@ struct Definition< ::teensy::ar3_control_<ContainerAllocator> >
     return "int8 home\n"
 "int8 run\n"
 "int8 rest\n"
-"int8 close_gripper\n"
+"\n"
+"int8 gripper_angle\n"
+"float64 speed\n"
 "\n"
 "float64[6] joint_angles\n"
 "\n"
@@ -200,7 +208,8 @@ namespace serialization
       stream.next(m.home);
       stream.next(m.run);
       stream.next(m.rest);
-      stream.next(m.close_gripper);
+      stream.next(m.gripper_angle);
+      stream.next(m.speed);
       stream.next(m.joint_angles);
     }
 
@@ -226,8 +235,10 @@ struct Printer< ::teensy::ar3_control_<ContainerAllocator> >
     Printer<int8_t>::stream(s, indent + "  ", v.run);
     s << indent << "rest: ";
     Printer<int8_t>::stream(s, indent + "  ", v.rest);
-    s << indent << "close_gripper: ";
-    Printer<int8_t>::stream(s, indent + "  ", v.close_gripper);
+    s << indent << "gripper_angle: ";
+    Printer<int8_t>::stream(s, indent + "  ", v.gripper_angle);
+    s << indent << "speed: ";
+    Printer<double>::stream(s, indent + "  ", v.speed);
     s << indent << "joint_angles[]" << std::endl;
     for (size_t i = 0; i < v.joint_angles.size(); ++i)
     {

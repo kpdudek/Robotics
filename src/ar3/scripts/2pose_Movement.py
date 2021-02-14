@@ -7,7 +7,7 @@ import numpy as np
 from std_msgs.msg import Float64
 from std_msgs.msg import String
 import time
-from AR3.msg import AR3_Debug
+from ar3.msg import ar3_feedback
 import sys
 import os
 import pwd

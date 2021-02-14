@@ -21,7 +21,8 @@ class ar3_control {
       this.home = null;
       this.run = null;
       this.rest = null;
-      this.close_gripper = null;
+      this.gripper_angle = null;
+      this.speed = null;
       this.joint_angles = null;
     }
     else {
@@ -43,11 +44,17 @@ class ar3_control {
       else {
         this.rest = 0;
       }
-      if (initObj.hasOwnProperty('close_gripper')) {
-        this.close_gripper = initObj.close_gripper
+      if (initObj.hasOwnProperty('gripper_angle')) {
+        this.gripper_angle = initObj.gripper_angle
       }
       else {
-        this.close_gripper = 0;
+        this.gripper_angle = 0;
+      }
+      if (initObj.hasOwnProperty('speed')) {
+        this.speed = initObj.speed
+      }
+      else {
+        this.speed = 0.0;
       }
       if (initObj.hasOwnProperty('joint_angles')) {
         this.joint_angles = initObj.joint_angles
@@ -66,8 +73,10 @@ class ar3_control {
     bufferOffset = _serializer.int8(obj.run, buffer, bufferOffset);
     // Serialize message field [rest]
     bufferOffset = _serializer.int8(obj.rest, buffer, bufferOffset);
-    // Serialize message field [close_gripper]
-    bufferOffset = _serializer.int8(obj.close_gripper, buffer, bufferOffset);
+    // Serialize message field [gripper_angle]
+    bufferOffset = _serializer.int8(obj.gripper_angle, buffer, bufferOffset);
+    // Serialize message field [speed]
+    bufferOffset = _serializer.float64(obj.speed, buffer, bufferOffset);
     // Check that the constant length array field [joint_angles] has the right length
     if (obj.joint_angles.length !== 6) {
       throw new Error('Unable to serialize array field joint_angles - length must be 6')
@@ -87,15 +96,17 @@ class ar3_control {
     data.run = _deserializer.int8(buffer, bufferOffset);
     // Deserialize message field [rest]
     data.rest = _deserializer.int8(buffer, bufferOffset);
-    // Deserialize message field [close_gripper]
-    data.close_gripper = _deserializer.int8(buffer, bufferOffset);
+    // Deserialize message field [gripper_angle]
+    data.gripper_angle = _deserializer.int8(buffer, bufferOffset);
+    // Deserialize message field [speed]
+    data.speed = _deserializer.float64(buffer, bufferOffset);
     // Deserialize message field [joint_angles]
     data.joint_angles = _arrayDeserializer.float64(buffer, bufferOffset, 6)
     return data;
   }
 
   static getMessageSize(object) {
-    return 52;
+    return 60;
   }
 
   static datatype() {
@@ -105,7 +116,7 @@ class ar3_control {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '9026d471c1270c3777015c75e131a561';
+    return '208a9b5e1d8eccf1fe39655639adaa71';
   }
 
   static messageDefinition() {
@@ -114,7 +125,9 @@ class ar3_control {
     int8 home
     int8 run
     int8 rest
-    int8 close_gripper
+    
+    int8 gripper_angle
+    float64 speed
     
     float64[6] joint_angles
     
@@ -149,11 +162,18 @@ class ar3_control {
       resolved.rest = 0
     }
 
-    if (msg.close_gripper !== undefined) {
-      resolved.close_gripper = msg.close_gripper;
+    if (msg.gripper_angle !== undefined) {
+      resolved.gripper_angle = msg.gripper_angle;
     }
     else {
-      resolved.close_gripper = 0
+      resolved.gripper_angle = 0
+    }
+
+    if (msg.speed !== undefined) {
+      resolved.speed = msg.speed;
+    }
+    else {
+      resolved.speed = 0.0
     }
 
     if (msg.joint_angles !== undefined) {
