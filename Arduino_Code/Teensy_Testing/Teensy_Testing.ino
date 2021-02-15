@@ -80,6 +80,7 @@ int gripper_angle = 0;
 
 float joint_speed;
 int interp_skips[6] = {-1,-1,-1,-1,-1,-1};
+int total_skips[6] = {-1,-1,-1,-1,-1,-1};
 unsigned long int max_steps_to_go;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +100,7 @@ class RobotJoint{
     
     unsigned int pul_delay = 0, pulse_min = 60, pulse_max = 800;
     unsigned int accel_delay = 0;
-    int interp_skips = 0, interp_count = 0;
+    int interp_skips = 0, interp_count = 0, total_skips, skips;
     int new_goal = 0;
     
     float spd = 1.0;
@@ -110,7 +111,7 @@ class RobotJoint{
     float angle = 0.0;
     float error = 0.0;
 
-    float tolerance = 0.005;
+    float tolerance = 0.001;
 
     unsigned long int t = 0, t_prev = 0;
   
@@ -123,8 +124,12 @@ class RobotJoint{
       this->change_speed(this->spd);
     }
     
-    void update_position(int interp_skips){
+    void update_position(int interp_skips, int total_skips){
         this->t = micros();
+        
+        // Joint space interpolation
+        this->interp_skips = interp_skips;
+        this->total_skips = total_skips;
 
         if (this->prev_setpoint != this->setpoint){
           this->steps_taken = 0;
@@ -132,6 +137,7 @@ class RobotJoint{
           this->error = this->setpoint - this->angle;
           this->steps_to_go = round(abs(this->error / this->step_size));
           this->total_steps = round(abs(this->error / this->step_size));
+          this->skips = 0;
           this->new_goal = 1;
         }
         else{
@@ -158,9 +164,6 @@ class RobotJoint{
           return;
         }
 
-        // Joint space interpolation
-        this->interp_skips = interp_skips;
-
         // Set DIR pin
         if (this->dir == 1){
             digitalWrite(this->dir_pin,HIGH);
@@ -183,11 +186,12 @@ class RobotJoint{
           this->accel_delay = 0;
         }
         
-        if ((this->interp_count < this->interp_skips) && (this->t - this->t_prev)>(this->pul_delay+this->accel_delay)){
+        if ((this->interp_count < this->interp_skips) && ((this->t - this->t_prev)>(this->pul_delay+this->accel_delay)) && (this->skips < this->total_skips)){
           this->interp_count++;
+          this->skips++;
           this->t_prev = this->t;
         }
-        else if (this->pulse && ((this->t - this->t_prev)>(this->pul_delay+this->accel_delay)) && (this->interp_count >= this->interp_skips)){
+        else if (this->pulse && ((this->t - this->t_prev)>(this->pul_delay+this->accel_delay))){// && (this->interp_count >= this->interp_skips)){
           digitalWrite(this->pul_pin,0);
           this->t_prev = this->t;
           this->pulse = 0;
@@ -340,9 +344,12 @@ void loop() {
             for (int k=0;k<6;k++){
               if (joints[k].steps_to_go == max_steps_to_go){
                 interp_skips[k] = -1;//int((max_steps_to_go/joints[idx].steps_to_go)*2);
+                total_skips[k] = -1;
               }
               else{
-                interp_skips[k] = round((max_steps_to_go/joints[k].steps_to_go));
+                interp_skips[k] = int(ceil((max_steps_to_go/joints[k].steps_to_go)));
+                total_skips[k] = max_steps_to_go - joints[k].steps_to_go;
+//                joints[k].total_skips = max_steps_to_go - joints[k].steps_to_go;
               }
             }
             break;
@@ -351,7 +358,7 @@ void loop() {
         
         for (int idx=0;idx<6;idx++){
           joints[idx].change_speed(joint_speed);
-          joints[idx].update_position(interp_skips[idx]);
+          joints[idx].update_position(interp_skips[idx],total_skips[idx]);
           AR3FeedbackData.encoder_pulses[idx] = joints[idx].interp_skips;
         }
             
@@ -377,17 +384,17 @@ void loop() {
     nh.spinOnce();
 }
 
-
-float edgeAngle(float angle1, float angle2){
-    float vertex1[2];
-    float vertex2[2];
-    vertex1[0] = cos(angle1);
-    vertex1[1] = sin(angle1);
-    vertex2[0] = cos(angle2);
-    vertex2[1] = sin(angle2);
-
-    float cosine_theta = vertex1[0]*vertex2[0] + vertex1[1]*vertex2[1];
-    float sine_theta = vertex1[0]*vertex2[1]- vertex1[1]*vertex2[0];
-    float edge_angle = atan2(sine_theta,cosine_theta);
-    return edge_angle;
-}
+//
+//float edgeAngle(float angle1, float angle2){
+//    float vertex1[2];
+//    float vertex2[2];
+//    vertex1[0] = cos(angle1);
+//    vertex1[1] = sin(angle1);
+//    vertex2[0] = cos(angle2);
+//    vertex2[1] = sin(angle2);
+//
+//    float cosine_theta = vertex1[0]*vertex2[0] + vertex1[1]*vertex2[1];
+//    float sine_theta = vertex1[0]*vertex2[1]- vertex1[1]*vertex2[0];
+//    float edge_angle = atan2(sine_theta,cosine_theta);
+//    return edge_angle;
+//}

@@ -415,7 +415,7 @@
         </widget>
        </item>
        <item row="13" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="add_to_queue_button">
          <property name="font">
           <font>
            <pointsize>14</pointsize>
@@ -740,7 +740,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="7" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="clear_queue_button">
          <property name="font">
           <font>
            <pointsize>14</pointsize>
