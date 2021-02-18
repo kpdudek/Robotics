@@ -42,7 +42,7 @@ class Interpreter(object):
         self.AR3_Control = data
         data.joint_angles = list(data.joint_angles)
         
-        self.joint1.data = -1*data.joint_angles[0]
+        self.joint1.data = data.joint_angles[0]
         self.joint2.data = data.joint_angles[1]
         self.joint3.data = data.joint_angles[2]
         self.joint4.data = data.joint_angles[3]

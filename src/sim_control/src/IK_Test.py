@@ -25,21 +25,21 @@ def main():
 
     rate = rospy.Rate(60)
 
-    with open('/home/kurt/Robotics/src/sim_control/src/AR3_noGazebo.urdf', 'r') as file:
-        urdf = file.read()
+    with open('/home/kurt/Robotics/src/ar3/urdf/AR3_noGazebo.urdf', 'r') as fp:
+        urdf = fp.read()
     Solver = IK("world", "flange", urdf_string=urdf)
 
-    # print("IK solver uses link chain:")
-    # print(Solver.link_names)
+    print("IK solver uses link chain:")
+    print(Solver.link_names)
 
-    # print("IK solver base frame:")
-    # print(Solver.base_link)
+    print("IK solver base frame:")
+    print(Solver.base_link)
 
-    # print("IK solver tip link:")
-    # print(Solver.tip_link)
+    print("IK solver tip link:")
+    print(Solver.tip_link)
 
-    # print("IK solver for joints:")
-    # print(Solver.joint_names)
+    print("IK solver for joints:")
+    print(Solver.joint_names)
 
     # print("IK solver using joint limits:")
     # lb, up = Solver.get_joint_limits()
@@ -48,10 +48,10 @@ def main():
     
 
     qinit = [0.0] * Solver.number_of_joints
-    print(Solver.number_of_joints)
+    # print(Solver.number_of_joints)
 
-    x = 0.0; y = -0.25 ; z = 0.5
-    quat = quaternion_from_euler(0.,3.14,0,'rxyz')
+    x = 0.0; y = -0.3 ; z = 0.35
+    quat = quaternion_from_euler(0.,3.14,3.14,'rxyz')
     rx,ry,rz,rw = quat
 
     bx = by = bz = .03
@@ -62,23 +62,24 @@ def main():
     if not sol:
         print('No solution found!')
         return
+    print("Solution found: ",sol)
     
     
     # userIn = raw_input("Can the robot begin moving? Ensure the space is clear (y/n): ")
     # assert userIn=='y','Robot wont begin moving.'
 
-    robot_controller.AR3Control.home = 0
-    robot_controller.AR3Control.run = 1
-    robot_controller.AR3Control.rest = 0
-    while not rospy.is_shutdown():
-        angs = list(sol)
-        if angs:
-            # angs.pop()
-            robot_controller.AR3Control.joint_angles = angs
-            robot_controller.send_joints()
-        # rate.sleep()
+    # robot_controller.AR3Control.home = 0
+    # robot_controller.AR3Control.run = 1
+    # robot_controller.AR3Control.rest = 0
+    # while not rospy.is_shutdown():
+    #     angs = list(sol)
+    #     if angs:
+    #         # angs.pop()
+    #         robot_controller.AR3Control.joint_angles = angs
+    #         robot_controller.send_joints()
+    #     # rate.sleep()
 
-        resp = raw_input("Waiting...")
+    #     resp = raw_input("Waiting...")
 
 
 if __name__ == "__main__":
