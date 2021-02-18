@@ -913,6 +913,27 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>speed_spinbox</tabstop>
+  <tabstop>gripper_angle_spinbox</tabstop>
+  <tabstop>move_gripper_button</tabstop>
+  <tabstop>joint_1_setpoint</tabstop>
+  <tabstop>joint_2_setpoint</tabstop>
+  <tabstop>joint_3_setpoint</tabstop>
+  <tabstop>joint_4_setpoint</tabstop>
+  <tabstop>joint_5_setpoint</tabstop>
+  <tabstop>joint_6_setpoint</tabstop>
+  <tabstop>goto_button</tabstop>
+  <tabstop>add_to_queue_button</tabstop>
+  <tabstop>zero_button</tabstop>
+  <tabstop>rest_button</tabstop>
+  <tabstop>queue_list</tabstop>
+  <tabstop>pushButton_5</tabstop>
+  <tabstop>pushButton_6</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>start_queue_button</tabstop>
+  <tabstop>clear_queue_button</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

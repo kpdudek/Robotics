@@ -277,7 +277,7 @@ void setup() {
     gripper_servo.attach(21,500,2400);
 
     joints[0].set_limits(-1.57,1.57);
-    joints[1].set_limits(-0.5,0.5);
+    joints[1].set_limits(-0.5,0.8);
     joints[2].set_limits(-0.5,1.8);
     joints[3].set_limits(-1.57,1.57);
     joints[4].set_limits(-1.4,1.4);
@@ -347,7 +347,7 @@ void loop() {
                 total_skips[k] = -1;
               }
               else{
-                interp_skips[k] = int(ceil((max_steps_to_go/joints[k].steps_to_go)));
+                interp_skips[k] = round((max_steps_to_go/joints[k].steps_to_go));
                 total_skips[k] = max_steps_to_go - joints[k].steps_to_go;
 //                joints[k].total_skips = max_steps_to_go - joints[k].steps_to_go;
               }
