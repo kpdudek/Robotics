@@ -1,12 +1,11 @@
 <launch>
   <arg name="model" default="$(find ar3)/urdf/AR3_noGazebo.urdf"/>
-  <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find ar3)/launch/ar3_config.rviz" />
 
-  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
-  <param name="use_gui" value="$(arg gui)"/>
+  <param name="robot_description" textfile="$(arg model)"/>
 
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="sim_controller" pkg="sim_control" type="rviz_controller.py" output="screen"/>
+  <node name="sim_feedback" pkg="sim_control" type="rviz_feedback.py"/>
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" /> 
 </launch>
