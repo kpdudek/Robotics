@@ -13,10 +13,10 @@ from ar3.msg import ar3_feedback
 from sensor_msgs.msg import JointState
 
 import sys, os, pwd
-name = pwd.getpwuid( os.getuid() ).pw_name
-file_path = '/home/%s/Robotics/src/ar3/scripts'%name
-sys.path.insert(1,file_path)
-from RobotControllerClass import RobotController
+# name = pwd.getpwuid( os.getuid() ).pw_name
+# file_path = '/home/%s/Robotics/src/ar3/scripts'%name
+# sys.path.insert(1,file_path)
+from ar3.RobotControllerClass import RobotController
 
 class Interpreter(object):
     def __init__(self):

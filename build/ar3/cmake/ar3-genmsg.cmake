@@ -243,6 +243,16 @@ if(genpy_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ar3)
   install(
     DIRECTORY ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ar3
     DESTINATION ${genpy_INSTALL_DIR}
+    # skip all init files
+    PATTERN "__init__.py" EXCLUDE
+    PATTERN "__init__.pyc" EXCLUDE
+  )
+  # install init files which are not in the root folder of the generated code
+  install(
+    DIRECTORY ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ar3
+    DESTINATION ${genpy_INSTALL_DIR}
+    FILES_MATCHING
+    REGEX "${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ar3/.+/__init__.pyc?$"
   )
 endif()
 if(TARGET std_msgs_generate_messages_py)

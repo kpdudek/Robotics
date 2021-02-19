@@ -11,10 +11,10 @@ import pwd, sys, os
 from trac_ik_python.trac_ik import IK
 from trac_ik_python.trac_ik_wrap import TRAC_IK
 
-name = pwd.getpwuid( os.getuid() ).pw_name
-file_path = '/home/%s/Robotics/src/ar3/scripts'%name
-sys.path.insert(1,file_path)
-from RobotControllerClass import RobotController
+# name = pwd.getpwuid( os.getuid() ).pw_name
+# file_path = '/home/%s/Robotics/src/ar3/scripts'%name
+# sys.path.insert(1,file_path)
+from ar3.RobotControllerClass import RobotController
 
 def main():
 
