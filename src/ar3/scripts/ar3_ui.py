@@ -137,12 +137,34 @@ class AR3Controller(QMainWindow):
             self.joint_jog_widget.hide()
 
     def add_to_queue(self):
-        angles = []
-        for spinbox in self.joint_spinboxes:
-            angles.append(spinbox.value())
-        angles.append(self.gripper_angle_spinbox.value())
-        angles.append(self.speed_spinbox.value())
-        self.queue_list.addItem(angles)
+        if self.joint_radiobutton.isChecked():
+            angles = []
+            for spinbox in self.joint_spinboxes:
+                angles.append(spinbox.value())
+            angles.append(self.gripper_angle_spinbox.value())
+            angles.append(self.speed_spinbox.value())
+            self.queue_list.addItem(str(angles))
+        
+        elif self.pose_radiobutton.isChecked():
+            coord = []
+            for spinbox in self.pose_spinboxes:
+                coord.append(spinbox.value())
+
+            quat = quaternion_from_euler(coord[3],coord[4],coord[5],'rxyz')
+            rx,ry,rz,rw = quat
+            x,y,z = coord[0],coord[1],coord[2]
+            angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
+            print("Requested solution for: ",x,y,z,rx,ry,rz,rw)
+            if not angles:
+                print("Solution not found!")
+                return
+            else:
+                angles = list(angles)
+                print("Solution found!")
+
+            angles.append(self.gripper_angle_spinbox.value())
+            angles.append(self.speed_spinbox.value())
+            self.queue_list.addItem(str(angles))
     
     def clear_queue(self):
         self.queue_list.clear()
