@@ -1,5 +1,0 @@
-rrbot_gazebo
-/home/kurt/Robotics/devel/.private/rrbot_gazebo/cmake.lock /home/kurt/Robotics/devel/./cmake.lock
-/home/kurt/Robotics/devel/.private/rrbot_gazebo/share/rrbot_gazebo/cmake/rrbot_gazeboConfig.cmake /home/kurt/Robotics/devel/share/rrbot_gazebo/cmake/rrbot_gazeboConfig.cmake
-/home/kurt/Robotics/devel/.private/rrbot_gazebo/share/rrbot_gazebo/cmake/rrbot_gazeboConfig-version.cmake /home/kurt/Robotics/devel/share/rrbot_gazebo/cmake/rrbot_gazeboConfig-version.cmake
-/home/kurt/Robotics/devel/.private/rrbot_gazebo/lib/pkgconfig/rrbot_gazebo.pc /home/kurt/Robotics/devel/lib/pkgconfig/rrbot_gazebo.pc

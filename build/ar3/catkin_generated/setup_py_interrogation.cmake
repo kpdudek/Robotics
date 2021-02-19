@@ -1,7 +1,0 @@
-set(ar3_SETUP_PY_SETUP_MODULE "distutils.core")
-set(ar3_SETUP_PY_VERSION "0.0.0")
-set(ar3_SETUP_PY_SCRIPTS "")
-set(ar3_SETUP_PY_PACKAGES "ar3")
-set(ar3_SETUP_PY_PACKAGE_DIRS "src/ar3")
-set(ar3_SETUP_PY_MODULES "")
-set(ar3_SETUP_PY_MODULE_DIRS "")

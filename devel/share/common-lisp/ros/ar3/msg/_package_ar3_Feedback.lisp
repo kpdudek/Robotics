@@ -1,1 +1,0 @@
-/home/kurt/Robotics/devel/.private/ar3/share/common-lisp/ros/ar3/msg/_package_ar3_Feedback.lisp

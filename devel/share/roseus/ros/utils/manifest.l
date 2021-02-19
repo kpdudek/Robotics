@@ -1,1 +1,0 @@
-/home/kurt/Robotics/devel/.private/utils/share/roseus/ros/utils/manifest.l

@@ -1,1 +1,0 @@
-/home/kurt/Robotics/devel/.private/teensy/share/gennodejs/ros/teensy/msg/ar3_control.js

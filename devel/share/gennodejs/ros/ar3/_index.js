@@ -1,1 +1,0 @@
-/home/kurt/Robotics/devel/.private/ar3/share/gennodejs/ros/ar3/_index.js

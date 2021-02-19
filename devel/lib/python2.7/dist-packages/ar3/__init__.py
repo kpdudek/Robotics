@@ -1,1 +1,0 @@
-/home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/__init__.py

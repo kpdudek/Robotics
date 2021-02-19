@@ -1,1 +1,0 @@
-/home/kurt/Robotics/devel/.private/teensy/share/common-lisp/ros/teensy/msg/_package_teensy_pulses.lisp

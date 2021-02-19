@@ -1,1 +1,0 @@
-/home/kurt/Robotics/devel/.private/sim_control/lib/pkgconfig/sim_control.pc
