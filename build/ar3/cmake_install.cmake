@@ -133,7 +133,10 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ar3/msg" TYPE FILE FILES "/home/kurt/Robotics/src/ar3/msg/ar3_feedback.msg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ar3/msg" TYPE FILE FILES
+    "/home/kurt/Robotics/src/ar3/msg/ar3_feedback.msg"
+    "/home/kurt/Robotics/src/ar3/msg/ar3_control.msg"
+    )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

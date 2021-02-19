@@ -53,21 +53,29 @@ CMAKE_BINARY_DIR = /home/kurt/Robotics/build/ar3
 # Include the progress variables for this target.
 include CMakeFiles/ar3_generate_messages_py.dir/progress.make
 
+CMakeFiles/ar3_generate_messages_py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_control.py
 CMakeFiles/ar3_generate_messages_py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_feedback.py
 CMakeFiles/ar3_generate_messages_py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/__init__.py
 
 
+/home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_control.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
+/home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_control.py: /home/kurt/Robotics/src/ar3/msg/ar3_control.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/kurt/Robotics/build/ar3/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG ar3/ar3_control"
+	catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/kurt/Robotics/src/ar3/msg/ar3_control.msg -Iar3:/home/kurt/Robotics/src/ar3/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p ar3 -o /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg
+
 /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_feedback.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
 /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_feedback.py: /home/kurt/Robotics/src/ar3/msg/ar3_feedback.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/kurt/Robotics/build/ar3/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG ar3/ar3_feedback"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/kurt/Robotics/build/ar3/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python from MSG ar3/ar3_feedback"
 	catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/kurt/Robotics/src/ar3/msg/ar3_feedback.msg -Iar3:/home/kurt/Robotics/src/ar3/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p ar3 -o /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg
 
 /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/__init__.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
+/home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/__init__.py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_control.py
 /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/__init__.py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_feedback.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/kurt/Robotics/build/ar3/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python msg __init__.py for ar3"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/kurt/Robotics/build/ar3/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Python msg __init__.py for ar3"
 	catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg --initpy
 
 ar3_generate_messages_py: CMakeFiles/ar3_generate_messages_py
+ar3_generate_messages_py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_control.py
 ar3_generate_messages_py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/_ar3_feedback.py
 ar3_generate_messages_py: /home/kurt/Robotics/devel/.private/ar3/lib/python2.7/dist-packages/ar3/msg/__init__.py
 ar3_generate_messages_py: CMakeFiles/ar3_generate_messages_py.dir/build.make

@@ -7,10 +7,8 @@ from PyQt5.QtCore import *
 import random, sys, os, math, time, numpy
 import threading
 
-from teensy.msg import ar3_control
-from ar3.msg import ar3_feedback
-import rospy
-import rospkg
+from ar3.msg import ar3_feedback, ar3_control
+import rospy, rospkg
 import tf
 
 from trac_ik_python.trac_ik import IK

@@ -16,7 +16,8 @@ catkin_python_setup()
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  ar3_feedback.msg 
+  ar3_feedback.msg
+  ar3_control.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

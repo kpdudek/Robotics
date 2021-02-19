@@ -8,14 +8,10 @@ from std_msgs.msg import Float64
 import time
 import sys
 import os,getopt
-from teensy.msg import ar3_control
-from ar3.msg import ar3_feedback
+from ar3.msg import ar3_feedback, ar3_control
 from sensor_msgs.msg import JointState
 
 import sys, os, pwd
-# name = pwd.getpwuid( os.getuid() ).pw_name
-# file_path = '/home/%s/Robotics/src/ar3/scripts'%name
-# sys.path.insert(1,file_path)
 from ar3.RobotControllerClass import RobotController
 
 class Interpreter(object):

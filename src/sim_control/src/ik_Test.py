@@ -11,9 +11,6 @@ import pwd, sys, os
 from trac_ik_python.trac_ik import IK
 from trac_ik_python.trac_ik_wrap import TRAC_IK
 
-# name = pwd.getpwuid( os.getuid() ).pw_name
-# file_path = '/home/%s/Robotics/src/ar3/scripts'%name
-# sys.path.insert(1,file_path)
 from ar3.RobotControllerClass import RobotController
 
 def main():
@@ -27,13 +24,6 @@ def main():
     with open('/home/kurt/Robotics/src/ar3/urdf/AR3_noGazebo.urdf', 'r') as fp:
         urdf = fp.read()
     Solver = IK("world", "flange", urdf_string=urdf)
-
-    # _ik_solver = TRAC_IK("world",
-    #                               "flange",
-    #                               urdf,
-    #                               0.005,
-    #                               1e-5,
-    #                               "Speed")
 
     print("IK solver uses link chain:")
     print(Solver.link_names)

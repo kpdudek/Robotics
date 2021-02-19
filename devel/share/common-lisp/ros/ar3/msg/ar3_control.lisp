@@ -1,0 +1,1 @@
+/home/kurt/Robotics/devel/.private/ar3/share/common-lisp/ros/ar3/msg/ar3_control.lisp
