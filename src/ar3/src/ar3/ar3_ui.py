@@ -248,6 +248,7 @@ class AR3Controller(QMainWindow):
         self.feedback_angles = data.joint_angles
 
         (trans,rot) = self.listener.lookupTransform('/world', '/flange', rospy.Time(0))
+        rot = euler_from_quaternion(rot,'rxyz')
         tcp_pose = list(trans)+list(rot)
         idx = 0
         for lcd in self.tcp_lcds:

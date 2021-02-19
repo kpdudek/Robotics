@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>280</width>
+    <width>294</width>
     <height>322</height>
    </rect>
   </property>
@@ -122,6 +122,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-99.000000000000000</double>
         </property>
@@ -154,6 +157,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-99.000000000000000</double>
         </property>
@@ -169,6 +175,9 @@
           <family>Ubuntu</family>
           <pointsize>14</pointsize>
          </font>
+        </property>
+        <property name="decimals">
+         <number>3</number>
         </property>
         <property name="minimum">
          <double>-99.000000000000000</double>
@@ -202,6 +211,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-99.000000000000000</double>
         </property>
@@ -217,6 +229,9 @@
           <family>Ubuntu</family>
           <pointsize>14</pointsize>
          </font>
+        </property>
+        <property name="decimals">
+         <number>3</number>
         </property>
         <property name="minimum">
          <double>-99.000000000000000</double>
@@ -234,6 +249,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-99.000000000000000</double>
         </property>
@@ -247,6 +265,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>x_spinbox</tabstop>
+  <tabstop>y_spinbox</tabstop>
+  <tabstop>z_spinbox</tabstop>
+  <tabstop>rx_spinbox</tabstop>
+  <tabstop>ry_spinbox</tabstop>
+  <tabstop>rz_spinbox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

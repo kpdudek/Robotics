@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>256</width>
+    <width>278</width>
     <height>317</height>
    </rect>
   </property>
@@ -66,6 +66,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-2.000000000000000</double>
         </property>
@@ -99,6 +102,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-2.000000000000000</double>
         </property>
@@ -116,6 +122,9 @@
          <font>
           <pointsize>14</pointsize>
          </font>
+        </property>
+        <property name="decimals">
+         <number>3</number>
         </property>
         <property name="minimum">
          <double>-2.000000000000000</double>
@@ -165,6 +174,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-2.000000000000000</double>
         </property>
@@ -213,6 +225,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-2.000000000000000</double>
         </property>
@@ -231,6 +246,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="minimum">
          <double>-2.000000000000000</double>
         </property>
@@ -247,6 +265,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>joint_1_setpoint</tabstop>
+  <tabstop>joint_2_setpoint</tabstop>
+  <tabstop>joint_3_setpoint</tabstop>
+  <tabstop>joint_4_setpoint</tabstop>
+  <tabstop>joint_5_setpoint</tabstop>
+  <tabstop>joint_6_setpoint</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
