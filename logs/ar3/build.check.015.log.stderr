@@ -1,8 +1,0 @@
-[31m[1mCMake Error[0m at /opt/ros/melodic/share/catkin/cmake/catkin_python_setup.cmake:24 (message):
-  generate_messages() must be called after catkin_python_setup() in project
-  'ar3'
-[36mCall Stack (most recent call first):[0m
-  CMakeLists.txt:66 (catkin_python_setup)
-
-
-make: *** [cmake_check_build_system] Error 1
