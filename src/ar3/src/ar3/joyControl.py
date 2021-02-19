@@ -6,15 +6,9 @@ from math import pi
 import numpy as np
 import time
 from sensor_msgs.msg import Joy
-from ar3.msg import ar3_feedback
-from teensy.msg import ar3_control
+from ar3.msg import ar3_feedback, ar3_control
+import sys, os, pwd
 
-import sys
-import os
-import pwd
-name = pwd.getpwuid( os.getuid() ).pw_name
-file_path = '/home/%s/Robotics/src/ar3/scripts'%name
-sys.path.insert(1,file_path)
 from RobotControllerClass import RobotController
 from JoyControlClass import JoyController
 
