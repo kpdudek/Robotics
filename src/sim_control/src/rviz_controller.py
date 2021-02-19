@@ -25,7 +25,7 @@ class Interpreter(object):
         self.AR3ControlSub = rospy.Subscriber('/AR3/Control', ar3_control, self.AR3ControlCallback)
         
         self.t_prev = time.time()
-        self.speed = 0.00006
+        self.speed = 0.00001
         self.rate = 30.0
 
         pulse1Rev = 1.0 / (1600.0*10.0*4.0) # pulse/rev, gearbox, pulley ratio
