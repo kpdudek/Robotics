@@ -53,7 +53,7 @@
       <geometry>
 	      <mesh filename="$(find ar3)/urdf/meshes/Base.stl" scale=".001 .001 .001"/>
       </geometry>
-      <material name="orange"/>
+      <material name="blue"/>
     </visual>
 
     <inertial>

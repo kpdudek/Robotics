@@ -122,7 +122,7 @@ class AR3Controller(QMainWindow):
         while flag:
             flag = False
             for idx in range(0,6):
-                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.005:
+                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.01:
                     flag = True
 
     def run_queue(self):

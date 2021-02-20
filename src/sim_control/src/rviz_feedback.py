@@ -10,6 +10,7 @@ import sys
 import os,getopt
 from ar3.msg import ar3_feedback, ar3_control
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Bool
 
 import sys, os, pwd
 from ar3.RobotControllerClass import RobotController
@@ -21,6 +22,10 @@ class Interpreter(object):
         self.AR3FeebackPub = rospy.Publisher('/AR3/Feedback', ar3_feedback, queue_size=10)
 
         self.AR3_Feedback = ar3_feedback()
+
+        self.simulated_robot_flag_pub = rospy.Publisher('/AR3/is_simulated',Bool,queue_size=10)
+        self.simulated_robot_flag = Bool()
+        self.simulated_robot_flag.data = True
         
         self.joint_state = JointState()
         self.send_joints()
@@ -34,6 +39,7 @@ class Interpreter(object):
 
     def send_joints(self):
         self.AR3FeebackPub.publish(self.AR3_Feedback)
+        self.simulated_robot_flag_pub.publish(self.simulated_robot_flag)
 
 def main():
         rospy.init_node('rviz_feedback', anonymous='True')

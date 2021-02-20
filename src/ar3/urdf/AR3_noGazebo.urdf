@@ -97,7 +97,7 @@
       <geometry>
         <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Base.stl" scale=".001 .001 .001"/>
       </geometry>
-      <material name="orange"/>
+      <material name="blue"/>
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>

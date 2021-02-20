@@ -1,9 +1,17 @@
 <launch>
 
+    <arg name="model" default="$(find ar3)/urdf/AR3_noGazebo.urdf"/>
+    <arg name="rvizconfig" default="$(find ar3)/launch/ar3_config.rviz" />
+    <param name="robot_description" textfile="$(arg model)"/>
+
     <node name="ar3_serial" pkg="rosserial_python" type="serial_node.py" output="screen">
         <param name="port" value="/dev/ttyACM0" />
         <param name="baud" value="57600" />
     </node>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <node name="sim_controller" pkg="sim_control" type="rviz_controller.py" output="screen"/>
+    <!-- <node name="sim_feedback" pkg="sim_control" type="rviz_feedback.py"/> -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="false" /> 
 
 </launch>
 

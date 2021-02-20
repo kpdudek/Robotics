@@ -1,7 +1,7 @@
 #include <ros.h>
 #include <std_msgs/Float64.h>
 #include <ar3/ar3_feedback.h>
-#include <teensy/ar3_control.h>
+#include <ar3/ar3_control.h>
 #include <math.h>
 #include <Encoder.h>
 #include <Servo.h>
@@ -37,17 +37,17 @@
 float pi = 3.1415926;
 
 // Varables used to store time both current and 'stopwatch' times
-unsigned long int t_old=0, t=0, pub_freq = 500000;
+unsigned long int t_old=0, t=0, pub_freq = 100000;
 
 // Number of pulses to rotate a joint 2*PI radians. Accounts for settings on the stepper 
 // driver and all mechanical ratios. Inline comments denote the parameters
 // used in the calculation.
 float pulse1Rev = 1600.0*10.0*4.0; // pulse/rev, gearbox, pulley ratio
-float pulse2Rev = 3200.0*50.0; // pulse/rev, gearbox
+float pulse2Rev = 1600.0*50.0; // pulse/rev, gearbox
 float pulse3Rev = 1600.0*50.0; // pulse/rev, gearbox
 float pulse4Rev = 1600.0*(13.0+(212.0/289.0))*2.4893; // pulse/rev, gearbox, pulley ratio
 float pulse5Rev = 1.0/((8.0/1600.0)/(2.0*pi*13.675)); // pulse/rev, lead screw
-float pulse6Rev = 800.0*(19.0+(38.0/187.0)); // pulse/rev, gearbox;
+float pulse6Rev = 1600.0*(19.0+(38.0/187.0)); // pulse/rev, gearbox;
 
 // Pulse width of the signal sent to the stepper driver. This time is in microsecons
 // and is passed to the delay_microseconds() function. Making this value larger will
@@ -227,7 +227,7 @@ RobotJoint joints[6] = {RobotJoint(joint1PUL,joint1DIR, (1.0/pulse1Rev)*2.0*pi, 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ros::NodeHandle  nh;
 
-void AR3ControlCallback(const teensy::ar3_control &AR3_Control_Data){
+void AR3ControlCallback(const ar3::ar3_control &AR3_Control_Data){
     home = AR3_Control_Data.home;
     run = AR3_Control_Data.run;
     rest = AR3_Control_Data.rest;
@@ -241,7 +241,7 @@ void AR3ControlCallback(const teensy::ar3_control &AR3_Control_Data){
     
 }
 
-ros::Subscriber<teensy::ar3_control> AR3ControlSub("/AR3/Control",& AR3ControlCallback);
+ros::Subscriber<ar3::ar3_control> AR3ControlSub("/AR3/Control",& AR3ControlCallback);
 
 ar3::ar3_feedback AR3FeedbackData;
 ros::Publisher AR3FeedbackPub("/AR3/Feedback", &AR3FeedbackData);
@@ -303,7 +303,7 @@ void loop() {
 
     // Update joint 2 angle from encoder
     if (newPosition1 != oldPosition1) {
-//      AR3FeedbackData.encoder_pulses[1] = int(newPosition1);
+      AR3FeedbackData.encoder_pulses[1] = int(newPosition1);
       oldPosition1 = newPosition1;
     }
     
@@ -343,13 +343,12 @@ void loop() {
             }
             for (int k=0;k<6;k++){
               if (joints[k].steps_to_go == max_steps_to_go){
-                interp_skips[k] = -1;//int((max_steps_to_go/joints[idx].steps_to_go)*2);
+                interp_skips[k] = -1;
                 total_skips[k] = -1;
               }
               else{
                 interp_skips[k] = round((max_steps_to_go/joints[k].steps_to_go));
                 total_skips[k] = max_steps_to_go - joints[k].steps_to_go;
-//                joints[k].total_skips = max_steps_to_go - joints[k].steps_to_go;
               }
             }
             break;
@@ -359,7 +358,6 @@ void loop() {
         for (int idx=0;idx<6;idx++){
           joints[idx].change_speed(joint_speed);
           joints[idx].update_position(interp_skips[idx],total_skips[idx]);
-          AR3FeedbackData.encoder_pulses[idx] = joints[idx].interp_skips;
         }
             
         // Publish the arduinos current angle value for debugging purposes
