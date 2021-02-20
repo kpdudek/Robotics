@@ -66,6 +66,7 @@ class AR3Controller(QMainWindow):
         self.add_to_queue_button.clicked.connect(self.add_to_queue)
         self.start_queue_button.clicked.connect(self.start_queue)
         self.clear_queue_button.clicked.connect(self.clear_queue)
+        self.pull_current_config_button.clicked.connect(self.pull_current_config)
 
         self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,self.joint_jog_widget.joint_3_setpoint,
                                 self.joint_jog_widget.joint_4_setpoint,self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
@@ -80,6 +81,23 @@ class AR3Controller(QMainWindow):
 
         # Show main window
         self.show()
+
+    def pull_current_config(self):
+        idx = 0
+        for spinbox in self.joint_spinboxes:
+            spinbox.setValue(self.feedback_angles[idx])
+            idx += 1
+        print(self.feedback_angles)
+
+        (trans,rot) = self.listener.lookupTransform('/world', '/flange', rospy.Time(0))
+        rot = euler_from_quaternion(rot,'rxyz')
+        tcp_pose = list(trans)+list(rot)
+        idx = 0
+        for spinbox in self.pose_spinboxes:
+            spinbox.setValue(tcp_pose[idx])
+            idx += 1
+
+        self.gripper_angle_spinbox.setValue(int(self.robot_controller.AR3Feedback.gripper_angle))
 
     def set_jog_type(self):
         if self.joint_radiobutton.isChecked():
@@ -200,26 +218,29 @@ class AR3Controller(QMainWindow):
         self.robot_controller.send_joints()
     
     def update_feedback_label(self,data):
-        idx = 0
-        for lcd in self.joint_lcds:
-            lcd.display('%0.3f'%data.joint_angles[idx])
-            idx += 1
-        self.feedback_angles = data.joint_angles
+        try:
+            idx = 0
+            for lcd in self.joint_lcds:
+                lcd.display('%0.3f'%data.joint_angles[idx])
+                idx += 1
+            self.feedback_angles = data.joint_angles
 
-        (trans,rot) = self.listener.lookupTransform('/world', '/flange', rospy.Time(0))
-        rot = euler_from_quaternion(rot,'rxyz')
-        tcp_pose = list(trans)+list(rot)
-        idx = 0
-        for lcd in self.tcp_lcds:
-            lcd.display('%0.3f'%tcp_pose[idx])
-            idx += 1
+            (trans,rot) = self.listener.lookupTransform('/world', '/flange', rospy.Time(0))
+            rot = euler_from_quaternion(rot,'rxyz')
+            tcp_pose = list(trans)+list(rot)
+            idx = 0
+            for lcd in self.tcp_lcds:
+                lcd.display('%0.3f'%tcp_pose[idx])
+                idx += 1
 
-        self.gripper_lcd.display(data.gripper_angle)
-        
-        if data.eStop:
-            self.state_label.setText("E-STOP PRESSED")
-        elif data.running:
-            self.state_label.setText("RUNNING")
+            self.gripper_lcd.display(data.gripper_angle)
+            
+            if data.eStop:
+                self.state_label.setText("E-STOP PRESSED")
+            elif data.running:
+                self.state_label.setText("RUNNING")
+        except:
+            print('Failed to update the current config panel.')
 
 def main():
     # create pyqt5 app

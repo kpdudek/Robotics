@@ -27,6 +27,7 @@ class RobotController(object):
         self.AR3Feedback.homed = data.homed
         self.AR3Feedback.running = data.running
         self.AR3Feedback.resting = data.resting
+        self.AR3Feedback.gripper_angle = data.gripper_angle
 
     def send_joints(self):
         self.AR3ControlPub.publish(self.AR3Control)

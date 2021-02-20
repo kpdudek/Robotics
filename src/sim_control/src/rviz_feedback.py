@@ -17,12 +17,16 @@ from ar3.RobotControllerClass import RobotController
 class Interpreter(object):
     def __init__(self):
         self.joint_state_sub = rospy.Subscriber('/joint_states', JointState, callback=self.joint_state_callback)
+        self.AR3ControlCallback = rospy.Subscriber('/AR3/Control', ar3_control, callback=self.ar3_control_callback)
         self.AR3FeebackPub = rospy.Publisher('/AR3/Feedback', ar3_feedback, queue_size=10)
 
         self.AR3_Feedback = ar3_feedback()
         
         self.joint_state = JointState()
         self.send_joints()
+
+    def ar3_control_callback(self,data):
+        self.AR3_Feedback.gripper_angle = data.gripper_angle
     
     def joint_state_callback(self,data):        
         self.joint_state = data
