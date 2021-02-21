@@ -67,6 +67,11 @@ class AR3Controller(QMainWindow):
         self.start_queue_button.clicked.connect(self.start_queue)
         self.clear_queue_button.clicked.connect(self.clear_queue)
         self.pull_current_config_button.clicked.connect(self.pull_current_config)
+        self.program_up_button.clicked.connect(self.program_up)
+        self.program_down_button.clicked.connect(self.program_down)
+        self.program_remove_button.clicked.connect(self.program_remove)
+
+        self.cursor_idx = -1
 
         self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,self.joint_jog_widget.joint_3_setpoint,
                                 self.joint_jog_widget.joint_4_setpoint,self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
@@ -81,13 +86,89 @@ class AR3Controller(QMainWindow):
 
         # Show main window
         self.show()
+    
+    def program_up(self):
+        if self.queue_list.count() == 0:
+            return
+        
+        self.cursor_idx -= 1
+        if self.cursor_idx < 0:
+            self.cursor_idx = 0
+        self.queue_list.setCurrentRow(self.cursor_idx)
+
+    def program_down(self):
+        count = self.queue_list.count()
+        if count == 0:
+            return
+        
+        self.cursor_idx += 1
+        if self.cursor_idx >= count:
+            self.cursor_idx = count-1
+        self.queue_list.setCurrentRow(self.cursor_idx)
+    
+    def program_remove(self):
+        self.queue_list.takeItem(self.cursor_idx)
+
+        count = self.queue_list.count()
+        if self.cursor_idx > count-1:
+            self.cursor_idx = count-1
+
+    def add_to_queue(self):
+        program_line = ''
+        program_line += 'JMove'
+        for angle in self.feedback_angles:
+            program_line += ' %.3f'%angle
+        
+        program_line += ' %d'%self.robot_controller.AR3Feedback.gripper_angle
+        program_line += ' %.2f'%self.speed_spinbox.value()
+
+        self.cursor_idx += 1
+        self.queue_list.insertItem(self.cursor_idx,program_line)
+        self.queue_list.setCurrentRow(self.cursor_idx)
+        print("Queueing: {}".format(program_line))
+    
+    def clear_queue(self):
+        self.queue_list.clear()
+
+    def wait_for_move(self):
+        flag = True
+        while flag:
+            flag = False
+            for idx in range(0,6):
+                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.01:
+                    flag = True
+
+    def run_queue(self):
+        for idx in range(self.queue_list.count()):
+            program_line = self.queue_list.item(idx).text()
+            tokens = program_line.split(' ')
+
+            angles = tokens[1:7]
+            for n in range(0,6):
+                angles[n] = float(angles[n])
+            gripper_val = int(tokens[7])
+            speed = float(tokens[8])
+
+            self.setpoint_angles = angles
+            print("Moving to: {} {} {}".format(angles,gripper_val,speed))
+
+            self.robot_controller.AR3Control.speed = speed
+            self.robot_controller.AR3Control.gripper_angle = gripper_val
+            self.robot_controller.AR3Control.joint_angles = angles
+            self.robot_controller.send_joints()
+
+            self.wait_for_move()
+        print("Program completed.")
+
+    def start_queue(self):
+        self.queue_thread = threading.Thread(target=self.run_queue)
+        self.queue_thread.start()
 
     def pull_current_config(self):
         idx = 0
         for spinbox in self.joint_spinboxes:
             spinbox.setValue(self.feedback_angles[idx])
             idx += 1
-        print(self.feedback_angles)
 
         (trans,rot) = self.listener.lookupTransform('/world', '/flange', rospy.Time(0))
         rot = euler_from_quaternion(rot,'rxyz')
@@ -106,53 +187,6 @@ class AR3Controller(QMainWindow):
         if self.pose_radiobutton.isChecked():
             self.pose_jog_widget.show()
             self.joint_jog_widget.hide()
-
-    def add_to_queue(self):
-        angles = list(self.feedback_angles)
-        angles.append(self.robot_controller.AR3Feedback.gripper_angle)
-        angles.append(self.speed_spinbox.value())
-        self.queue_list.addItem(str(angles))
-        print("Queueing: ",angles)
-    
-    def clear_queue(self):
-        self.queue_list.clear()
-
-    def wait_for_move(self):
-        flag = True
-        while flag:
-            flag = False
-            for idx in range(0,6):
-                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.01:
-                    flag = True
-
-    def run_queue(self):
-        for idx in range(self.queue_list.count()):
-            angles = self.queue_list.item(idx).text()
-            angles = angles.strip('[]')
-            angles = angles.replace(" ","")
-            angles = angles.split(',')
-            for idx,val in enumerate(angles):
-                if idx < 6:
-                    angles[idx] = float(val)
-                elif idx == 6:
-                    gripper_val = int(val)
-                elif idx == 7:
-                    speed = float(val)
-            angles = angles[0:6]
-            self.setpoint_angles = angles
-            print(angles,gripper_val,speed)
-
-            self.robot_controller.AR3Control.speed = speed
-            self.robot_controller.AR3Control.gripper_angle = gripper_val
-            self.robot_controller.AR3Control.joint_angles = angles
-            self.robot_controller.send_joints()
-
-            self.wait_for_move()
-        print("Program completed")
-
-    def start_queue(self):
-        self.queue_thread = threading.Thread(target=self.run_queue)
-        self.queue_thread.start()
 
     def move_gripper(self):
         self.gripper_angle = self.gripper_angle_spinbox.value()
@@ -182,7 +216,7 @@ class AR3Controller(QMainWindow):
             rx,ry,rz,rw = quat
             x,y,z = coord[0],coord[1],coord[2]
             angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
-            print("Requested solution for: ",x,y,z,rx,ry,rz,rw)
+            print("Requested solution for: {} {} {} {} {} {}".format(x,y,z,rx,ry,rz,rw))
             if not angles:
                 print("Solution not found!")
                 return
@@ -190,7 +224,6 @@ class AR3Controller(QMainWindow):
                 angles = list(angles)
                 print("Solution found!")
 
-            # angles = [0.0]*6
             self.gripper_angle = self.gripper_angle_spinbox.value()
             self.speed = self.speed_spinbox.value()
 

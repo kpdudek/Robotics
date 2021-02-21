@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>661</width>
-    <height>703</height>
+    <width>716</width>
+    <height>712</height>
    </rect>
   </property>
   <property name="font">
@@ -271,7 +271,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QPushButton" name="pushButton_5">
+           <widget class="QPushButton" name="program_up_button">
             <property name="font">
              <font>
               <pointsize>14</pointsize>
@@ -283,7 +283,7 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QPushButton" name="pushButton_6">
+           <widget class="QPushButton" name="program_down_button">
             <property name="font">
              <font>
               <pointsize>14</pointsize>
@@ -307,7 +307,7 @@
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="program_remove_button">
             <property name="font">
              <font>
               <pointsize>14</pointsize>
@@ -987,7 +987,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>661</width>
+     <width>716</width>
      <height>24</height>
     </rect>
    </property>
@@ -1024,9 +1024,9 @@
  </widget>
  <tabstops>
   <tabstop>queue_list</tabstop>
-  <tabstop>pushButton_5</tabstop>
-  <tabstop>pushButton_6</tabstop>
-  <tabstop>pushButton_2</tabstop>
+  <tabstop>program_up_button</tabstop>
+  <tabstop>program_down_button</tabstop>
+  <tabstop>program_remove_button</tabstop>
   <tabstop>start_queue_button</tabstop>
   <tabstop>clear_queue_button</tabstop>
  </tabstops>
