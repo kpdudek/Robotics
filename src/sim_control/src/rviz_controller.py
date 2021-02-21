@@ -98,7 +98,7 @@ class Interpreter(object):
                     self.max_steps_to_go = abs(joint.steps_to_go)
                 # print(joint.steps_to_go)
             self.new_goal = False
-            print(self.max_steps_to_go)
+            # print(self.max_steps_to_go)
 
     def AR3FeedbackCallback(self,data):
         self.feedback_angles = data.joint_angles

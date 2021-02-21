@@ -89,13 +89,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Base.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Base.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Base.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Base.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="blue"/>
     </visual>
@@ -110,13 +110,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link1.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link1.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link1.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link1.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -140,13 +140,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link2.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link2.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link2.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link2.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="blue"/>
     </visual>
@@ -170,13 +170,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link3.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link3.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link3.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link3.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -200,13 +200,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link4.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link4.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link4.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link4.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="blue"/>
     </visual>
@@ -230,13 +230,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link5.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link5.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link5.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link5.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -260,13 +260,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link6.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link6.stl" scale=".001 .001 .001"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link6.stl" scale=".001 .001 .001"/>
+        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link6.stl" scale=".001 .001 .001"/>
       </geometry>
       <material name="blue"/>
     </visual>
