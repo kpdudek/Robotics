@@ -98,7 +98,7 @@ class RobotJoint{
     unsigned long int steps_to_go;
     unsigned long int steps_taken = 0, total_steps = 0;
     
-    unsigned int pul_delay = 0, pulse_min = 60, pulse_max = 800;
+    unsigned int pul_delay = 0, pulse_min = 25, pulse_max = 400;
     unsigned int accel_delay = 0;
     int interp_skips = 0, interp_count = 0, total_skips, skips;
     int new_goal = 0;
@@ -113,7 +113,7 @@ class RobotJoint{
 
     float tolerance = 0.001;
 
-    unsigned long int t = 0, t_prev = 0;
+    unsigned long int t = 0, t_prev = 0, t_delay, t_diff;
   
     RobotJoint(int pul_pin,int dir_pin, float step_size, char* id){
       this->pul_pin = pul_pin;
@@ -178,30 +178,33 @@ class RobotJoint{
         }
         else if (this->steps_taken < 1500){ // Accelerate
           this->accel_delay = int((1.0/(this->steps_taken/25000.0)));
-          if (this->accel_delay > 1500){
-            this->accel_delay = 1500;
-          }
         }
         else{ // Coast at specified speed
           this->accel_delay = 0;
         }
-        
-        if ((this->interp_count < this->interp_skips) && ((this->t - this->t_prev)>(this->pul_delay+this->accel_delay)) && (this->skips < this->total_skips)){
+        if (this->accel_delay > 2000){
+            this->accel_delay = 2000;
+        }
+
+        this->t_delay = this->pul_delay+this->accel_delay;
+        this->t_diff = this->t - this->t_prev;
+        if ((this->interp_count < this->interp_skips) && (this->t_diff > this->t_delay) && (this->skips < this->total_skips)){
           this->interp_count++;
           this->skips++;
           this->t_prev = this->t;
         }
-        else if (this->pulse && ((this->t - this->t_prev)>(this->pul_delay+this->accel_delay))){// && (this->interp_count >= this->interp_skips)){
+        else if (this->pulse && (this->t_diff>this->t_delay)){
           digitalWrite(this->pul_pin,0);
           this->t_prev = this->t;
           this->pulse = 0;
           this->angle = this->angle + (this->step_size*this->dir);
           this->steps_taken++;
         }
-        else if (this->pulse == 0){
+        else if ((this->pulse == 0) && (this->t_diff > this->t_delay)){
           this->interp_count = 0;
           digitalWrite(this->pul_pin,1);
           this->pulse = 1;
+          this->t_prev = this->t;
         }
     }
 
