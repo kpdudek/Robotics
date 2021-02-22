@@ -82,6 +82,7 @@ float joint_speed;
 int interp_skips[6] = {-1,-1,-1,-1,-1,-1};
 int total_skips[6] = {-1,-1,-1,-1,-1,-1};
 unsigned long int max_steps_to_go;
+unsigned long int max_time, max_idx;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Class declarations
@@ -95,10 +96,9 @@ class RobotJoint{
     int dir = 1;
     
     float step_size;
-    unsigned long int steps_to_go;
-    unsigned long int steps_taken = 0, total_steps = 0;
+    unsigned long int steps_to_go, steps_taken;
     
-    unsigned int pul_delay = 0, pulse_min = 25, pulse_max = 400;
+    unsigned int pul_delay = 0, pulse_min = 30, pulse_max = 400;
     unsigned int accel_delay = 0;
     int interp_skips = 0, interp_count = 0, total_skips, skips;
     int new_goal = 0;
@@ -124,7 +124,7 @@ class RobotJoint{
       this->change_speed(this->spd);
     }
     
-    void update_position(int interp_skips, int total_skips){
+    void update_position(void){
         this->t = micros();
         
         // Joint space interpolation
@@ -136,8 +136,6 @@ class RobotJoint{
           this->prev_setpoint = this->setpoint;
           this->error = this->setpoint - this->angle;
           this->steps_to_go = round(abs(this->error / this->step_size));
-          this->total_steps = round(abs(this->error / this->step_size));
-          this->skips = 0;
           this->new_goal = 1;
         }
         else{
@@ -145,7 +143,8 @@ class RobotJoint{
           this->steps_to_go = round(abs(this->error / this->step_size));
           this->new_goal = 0;
         }
-        
+
+        // Check if joint is at its setpoint
         if (this->error < -this->tolerance){
             this->dir = -1;
         }
@@ -153,10 +152,10 @@ class RobotJoint{
             this->dir = 1;
         }
         else{
-            this->steps_to_go = 0;
             return;
         }
 
+        // Check joint limits
         if ((this->angle + (this->dir*this->step_size)) > this->upper_limit){
           return;
         }
@@ -186,22 +185,18 @@ class RobotJoint{
             this->accel_delay = 2000;
         }
 
+        // Send pulse to stepper driver
         this->t_delay = this->pul_delay+this->accel_delay;
         this->t_diff = this->t - this->t_prev;
-        if ((this->interp_count < this->interp_skips) && (this->t_diff > this->t_delay) && (this->skips < this->total_skips)){
-          this->interp_count++;
-          this->skips++;
-          this->t_prev = this->t;
-        }
-        else if (this->pulse && (this->t_diff>this->t_delay)){
+
+        if (this->pulse && (this->t_diff>this->t_delay)){
           digitalWrite(this->pul_pin,0);
-          this->t_prev = this->t;
           this->pulse = 0;
           this->angle = this->angle + (this->step_size*this->dir);
           this->steps_taken++;
+          this->t_prev = this->t;
         }
         else if ((this->pulse == 0) && (this->t_diff > this->t_delay)){
-          this->interp_count = 0;
           digitalWrite(this->pul_pin,1);
           this->pulse = 1;
           this->t_prev = this->t;
@@ -316,15 +311,7 @@ void loop() {
             AR3FeedbackData.eStop = 1;
             AR3FeedbackData.running = 0;
             AR3FeedbackData.gripper_angle = gripper_angle;
-    
-            for (int idx=0;idx<6;idx++){
-              AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
-            }
-            
-            for (int idx=0;idx<6;idx++){
-              AR3FeedbackData.setpoint_angles[idx] = joints[idx].setpoint;
-            }
-            AR3FeedbackPub.publish(&AR3FeedbackData);
+            publish_data();
             t_old = t;
         }
     }
@@ -342,25 +329,22 @@ void loop() {
             for (int j=0;j<6;j++){
               if (joints[j].steps_to_go > max_steps_to_go){
                 max_steps_to_go = joints[j].steps_to_go;
+                max_idx = j;
               }
             }
-            for (int k=0;k<6;k++){
-              if (joints[k].steps_to_go == max_steps_to_go){
-                interp_skips[k] = -1;
-                total_skips[k] = -1;
-              }
-              else{
-                interp_skips[k] = round((max_steps_to_go/joints[k].steps_to_go));
-                total_skips[k] = max_steps_to_go - joints[k].steps_to_go;
+            joints[max_idx].change_speed(joint_speed);
+            max_time = max_steps_to_go * joints[max_idx].pul_delay;
+
+            for (int j=0;j<6;j++){
+              if (j != max_idx){
+                joints[j].pul_delay = max_time/joints[j].steps_to_go;
               }
             }
-            break;
           }
         }
         
         for (int idx=0;idx<6;idx++){
-          joints[idx].change_speed(joint_speed);
-          joints[idx].update_position(interp_skips[idx],total_skips[idx]);
+          joints[idx].update_position();
         }
             
         // Publish the arduinos current angle value for debugging purposes
@@ -368,15 +352,7 @@ void loop() {
             AR3FeedbackData.eStop = 0;
             AR3FeedbackData.running = 1;
             AR3FeedbackData.gripper_angle = gripper_angle;
-    
-            for (int idx=0;idx<6;idx++){
-              AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
-            }
-            
-            for (int idx=0;idx<6;idx++){
-              AR3FeedbackData.setpoint_angles[idx] = joints[idx].setpoint;
-            }
-            AR3FeedbackPub.publish(&AR3FeedbackData);
+            publish_data();
             t_old = t;
         }
     }
@@ -385,6 +361,16 @@ void loop() {
     nh.spinOnce();
 }
 
+void publish_data(void){
+    for (int idx=0;idx<6;idx++){
+      AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
+    }
+    
+    for (int idx=0;idx<6;idx++){
+      AR3FeedbackData.setpoint_angles[idx] = joints[idx].setpoint;
+    }
+    AR3FeedbackPub.publish(&AR3FeedbackData);
+}
 //
 //float edgeAngle(float angle1, float angle2){
 //    float vertex1[2];
