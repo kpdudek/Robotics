@@ -29,8 +29,6 @@ class AR3Controller(QMainWindow):
         uic.loadUi(self.ar3_path+'/src/ar3/ui/ar3_controller.ui', self)
         self.joint_jog_widget = uic.loadUi(self.ar3_path+'/src/ar3/ui/joint_controller.ui')
         self.pose_jog_widget = uic.loadUi(self.ar3_path+'/src/ar3/ui/pose_controller.ui')
-        self.width = 1800
-        self.height = 850
         self.screen_height = screen.size().height()
         self.screen_width = screen.size().width()
         self.setWindowTitle("AR3 Controller")
@@ -47,9 +45,7 @@ class AR3Controller(QMainWindow):
         self.ar3_feeback_sub = rospy.Subscriber('/AR3/Feedback',ar3_feedback,self.update_feedback_label)
         self.listener = tf.TransformListener()
         self.robot_controller = RobotController()
-        self.robot_controller.AR3Control.home = 0
         self.robot_controller.AR3Control.run = 1
-        self.robot_controller.AR3Control.rest = 0
         self.feedback_angles = []
         self.setpoint_angles = []
 
@@ -59,6 +55,7 @@ class AR3Controller(QMainWindow):
         self.jog_layout.addWidget(self.pose_jog_widget)
         self.pose_jog_widget.hide()
 
+        self.cursor_idx = -1
         self.goto_button.clicked.connect(self.goto)
         self.rest_button.clicked.connect(self.rest)
         self.zero_button.clicked.connect(self.zero)
@@ -71,20 +68,14 @@ class AR3Controller(QMainWindow):
         self.program_down_button.clicked.connect(self.program_down)
         self.program_remove_button.clicked.connect(self.program_remove)
 
-        self.cursor_idx = -1
-
         self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,self.joint_jog_widget.joint_3_setpoint,
                                 self.joint_jog_widget.joint_4_setpoint,self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
-        
         self.pose_spinboxes = [self.pose_jog_widget.x_spinbox, self.pose_jog_widget.y_spinbox, self.pose_jog_widget.z_spinbox,
                                self.pose_jog_widget.rx_spinbox,self.pose_jog_widget.ry_spinbox,self.pose_jog_widget.rz_spinbox]
-
         self.joint_lcds = [self.j1_lcd,self.j2_lcd,self.j3_lcd,self.j4_lcd,self.j5_lcd,self.j6_lcd]
         self.tcp_lcds = [self.x_lcd,self.y_lcd,self.z_lcd,self.rx_lcd,self.ry_lcd,self.rz_lcd]
 
         self.set_jog_type()
-
-        # Show main window
         self.show()
     
     def program_up(self):

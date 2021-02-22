@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>716</width>
-    <height>712</height>
+    <width>995</width>
+    <height>737</height>
    </rect>
   </property>
   <property name="font">
@@ -420,7 +420,7 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_10">
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QFrame" name="frame">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -717,7 +717,52 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="0" column="0" colspan="2">
+           <widget class="QFrame" name="frame_8">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_9">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_19">
+               <property name="maximumSize">
+                <size>
+                 <width>65</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>State:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="state_label">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>No data received...</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="1">
            <widget class="QFrame" name="frame_5">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -897,49 +942,40 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="0" colspan="2">
-           <widget class="QFrame" name="frame_8">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_22">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>true</italic>
+              <bold>true</bold>
+             </font>
             </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
+            <property name="text">
+             <string>Joint Angles</string>
             </property>
-            <layout class="QGridLayout" name="gridLayout_9">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_19">
-               <property name="maximumSize">
-                <size>
-                 <width>50</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>14</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>State:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="state_label">
-               <property name="font">
-                <font>
-                 <pointsize>14</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>No data received...</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_23">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <italic>true</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TCP Position</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
            </widget>
           </item>
          </layout>
@@ -987,7 +1023,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>716</width>
+     <width>995</width>
      <height>24</height>
     </rect>
    </property>
