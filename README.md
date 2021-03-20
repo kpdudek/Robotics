@@ -23,7 +23,7 @@ Install the remaining dependencies:
 ```
 sudo apt-get install ros-melodic-trac-ik-python
 sudo apt install python3 python3-pip
-pip3 install PyQt5
+sudo apt install python3-pyqt5
 pip3 install numpy
 ```
 
