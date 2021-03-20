@@ -349,8 +349,6 @@ void loop() {
             
         // Publish the arduinos current angle value for debugging purposes
         if ((t-t_old) > (pub_freq)){
-            AR3FeedbackData.eStop = 0;
-            AR3FeedbackData.running = 1;
             AR3FeedbackData.gripper_angle = gripper_angle;
             publish_data();
             t_old = t;
@@ -365,7 +363,6 @@ void publish_data(void){
     for (int idx=0;idx<6;idx++){
       AR3FeedbackData.joint_angles[idx] = joints[idx].angle;
     }
-    
     for (int idx=0;idx<6;idx++){
       AR3FeedbackData.setpoint_angles[idx] = joints[idx].setpoint;
     }
