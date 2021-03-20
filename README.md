@@ -24,7 +24,8 @@ Install the remaining dependencies:
 sudo apt-get install ros-melodic-trac-ik-python
 sudo apt install python3 python3-pip
 sudo apt install python3-pyqt5
-pip3 install numpy
+sudo pip3 install rospkg catkin_pkg
+sudo pip3 install numpy
 ```
 
 ## Rviz simulation
