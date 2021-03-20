@@ -22,6 +22,8 @@ class Interpreter(object):
         self.AR3FeebackPub = rospy.Publisher('/AR3/Feedback', ar3_feedback, queue_size=10)
 
         self.AR3_Feedback = ar3_feedback()
+        self.AR3_Feedback.eStop = 0
+        self.AR3_Feedback.running = 1
 
         self.simulated_robot_flag_pub = rospy.Publisher('/AR3/is_simulated',Bool,queue_size=10)
         self.simulated_robot_flag = Bool()

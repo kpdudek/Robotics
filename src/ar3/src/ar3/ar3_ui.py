@@ -68,6 +68,9 @@ class AR3Controller(QMainWindow):
         self.program_down_button.clicked.connect(self.program_down)
         self.program_remove_button.clicked.connect(self.program_remove)
 
+        self.actionSave_Queue.triggered.connect(self.save_queue)
+        self.actionLoad_Queue.triggered.connect(self.load_queue)
+
         self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,self.joint_jog_widget.joint_3_setpoint,
                                 self.joint_jog_widget.joint_4_setpoint,self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
         self.pose_spinboxes = [self.pose_jog_widget.x_spinbox, self.pose_jog_widget.y_spinbox, self.pose_jog_widget.z_spinbox,
@@ -75,9 +78,29 @@ class AR3Controller(QMainWindow):
         self.joint_lcds = [self.j1_lcd,self.j2_lcd,self.j3_lcd,self.j4_lcd,self.j5_lcd,self.j6_lcd]
         self.tcp_lcds = [self.x_lcd,self.y_lcd,self.z_lcd,self.rx_lcd,self.ry_lcd,self.rz_lcd]
 
+        self.program_buffer = []
+
         self.set_jog_type()
         self.show()
+
+    def save_queue(self):
+        print('Saving queue')
+
+        fp = open(self.ar3_path+'/src/ar3/programs/test.txt','w')
+        for line in self.program_buffer:
+            fp.write(line+'\n')
+        fp.close()
     
+    def load_queue(self):
+        print('Loading queue')
+        self.clear_queue()
+
+        fp = open(self.ar3_path+'/src/ar3/programs/test.txt','r')
+        for line in fp:
+            line = line.strip('\n')
+            self.add_to_queue(from_buffer=line)
+        fp.close()
+        
     def program_up(self):
         if self.queue_list.count() == 0:
             return
@@ -99,19 +122,25 @@ class AR3Controller(QMainWindow):
     
     def program_remove(self):
         self.queue_list.takeItem(self.cursor_idx)
+        self.program_buffer.pop(self.cursor_idx)
 
         count = self.queue_list.count()
         if self.cursor_idx > count-1:
             self.cursor_idx = count-1
 
-    def add_to_queue(self):
-        program_line = ''
-        program_line += 'JMove'
-        for angle in self.feedback_angles:
-            program_line += ' %.3f'%angle
-        
-        program_line += ' %d'%self.robot_controller.AR3Feedback.gripper_angle
-        program_line += ' %.2f'%self.speed_spinbox.value()
+    def add_to_queue(self,from_buffer=None):
+        if from_buffer:
+            program_line=from_buffer
+        else:
+            program_line = ''
+            program_line += 'JMove'
+            for angle in self.feedback_angles:
+                program_line += ' %.3f'%angle
+            
+            program_line += ' %d'%self.robot_controller.AR3Feedback.gripper_angle
+            program_line += ' %.2f'%self.speed_spinbox.value()
+
+        self.program_buffer.append(program_line)
 
         self.cursor_idx += 1
         self.queue_list.insertItem(self.cursor_idx,program_line)
@@ -120,13 +149,14 @@ class AR3Controller(QMainWindow):
     
     def clear_queue(self):
         self.queue_list.clear()
+        self.program_buffer = []
 
     def wait_for_move(self):
         flag = True
         while flag:
             flag = False
             for idx in range(0,6):
-                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.01:
+                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.03:
                     flag = True
 
     def run_queue(self):
@@ -206,6 +236,7 @@ class AR3Controller(QMainWindow):
             quat = quaternion_from_euler(coord[3],coord[4],coord[5],'rxyz')
             rx,ry,rz,rw = quat
             x,y,z = coord[0],coord[1],coord[2]
+            self.qinit = self.feedback_angles
             angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
             print("Requested solution for: {} {} {} {} {} {}".format(x,y,z,rx,ry,rz,rw))
             if not angles:
@@ -229,7 +260,7 @@ class AR3Controller(QMainWindow):
 
         self.robot_controller.AR3Control.speed = self.speed
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle        
-        self.robot_controller.AR3Control.joint_angles = [1.57,-.4,1.3,0.0,1.0,0.0]
+        self.robot_controller.AR3Control.joint_angles = [0.0,0.0,1.57,0.0,1.57,0.0]
         self.robot_controller.send_joints()
 
     def zero(self):
