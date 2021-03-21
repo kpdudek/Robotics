@@ -75,32 +75,32 @@ Visualization Manager:
           Show Trail: false
         link1:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         link2:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         link3:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         link4:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         link5:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         link6:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         world:
@@ -141,25 +141,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.9815236330032349
+      Distance: 1.85127592086792
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.2807364761829376
-        Y: 0.3771679401397705
-        Z: 0.1330876499414444
+        X: -0.25593188405036926
+        Y: 0.05479222536087036
+        Z: 0.20548522472381592
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5403984189033508
+      Pitch: 0.5653985738754272
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.12040732055902481
+      Yaw: 5.75859260559082
     Saved: ~
 Window Geometry:
   Displays:
@@ -177,5 +177,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 0
-  Y: 23
+  X: 8
+  Y: 31

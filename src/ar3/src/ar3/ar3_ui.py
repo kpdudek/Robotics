@@ -238,7 +238,7 @@ class AR3Controller(QMainWindow):
             x,y,z = coord[0],coord[1],coord[2]
             self.qinit = self.feedback_angles
             angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
-            print("Requested solution for: {} {} {} {} {} {}".format(x,y,z,rx,ry,rz,rw))
+            print("Requested solution for: {} {} {} {} {} {}".format(x,y,z,coord[3],coord[4],coord[5]))
             if not angles:
                 print("Solution not found!")
                 return
@@ -260,7 +260,7 @@ class AR3Controller(QMainWindow):
 
         self.robot_controller.AR3Control.speed = self.speed
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle        
-        self.robot_controller.AR3Control.joint_angles = [0.0,0.0,1.57,0.0,1.57,0.0]
+        self.robot_controller.AR3Control.joint_angles = [0.007,0.585,1.020,-0.002,1.294,0.007]
         self.robot_controller.send_joints()
 
     def zero(self):

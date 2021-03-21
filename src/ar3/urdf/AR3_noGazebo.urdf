@@ -133,7 +133,7 @@
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="0.7"/>
-    <limit effort="30.0" lower="-2.0" upper="2.0" velocity="10.0"/>
+    <limit effort="30.0" lower="-1.57" upper="1.57" velocity="10.0"/>
   </joint>
   <!-- Link 2 -->
   <link name="link2">
@@ -163,7 +163,7 @@
     <origin rpy="0 0 0" xyz="0.0508 -0.06786547 0.1390754"/>
     <axis xyz="1 0 0"/>
     <dynamics damping="0.7"/>
-    <limit effort="30.0" lower="-2.0" upper="2.0" velocity="10.0"/>
+    <limit effort="30.0" lower="-0.5" upper="1.57" velocity="10.0"/>
   </joint>
   <!-- Link 3 -->
   <link name="link3">
@@ -193,7 +193,7 @@
     <origin rpy="0 0 0" xyz="-0.015 0 0.305"/>
     <axis xyz="1 0 0"/>
     <dynamics damping="0.7"/>
-    <limit effort="30.0" lower="-2.0" upper="2.0" velocity="10.0"/>
+    <limit effort="30.0" lower="-0.1" upper="2.0" velocity="10.0"/>
   </joint>
   <!-- LINK 4-->
   <link name="link4">
@@ -223,7 +223,7 @@
     <origin rpy="0 0 0" xyz="-0.036 0 0.05"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="0.7"/>
-    <limit effort="30.0" lower="-2.0" upper="2.0" velocity="10.0"/>
+    <limit effort="30.0" lower="-1.57" upper="1.57" velocity="10.0"/>
   </joint>
   <!-- LINK 5-->
   <link name="link5">
@@ -253,7 +253,7 @@
     <origin rpy="0 0 0" xyz="0 0 0.172"/>
     <axis xyz="1 0 0"/>
     <dynamics damping="0.7"/>
-    <limit effort="30.0" lower="-2.0" upper="2.0" velocity="10.0"/>
+    <limit effort="30.0" lower="-1.4" upper="1.4" velocity="10.0"/>
   </joint>
   <!-- LINK 6-->
   <link name="link6">
@@ -283,7 +283,7 @@
     <origin rpy="0 0 0" xyz="0 0 0.015"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="0.7"/>
-    <limit effort="30.0" lower="-2.0" upper="2.0" velocity="10.0"/>
+    <limit effort="30.0" lower="-3.14" upper="3.14" velocity="10.0"/>
   </joint>
   <!-- END OF ROBOT -->
   <!-- Robot to Environment-->

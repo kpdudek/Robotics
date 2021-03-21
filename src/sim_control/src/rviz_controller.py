@@ -12,8 +12,8 @@ from ar3.msg import ar3_feedback, ar3_control
 from ar3.RobotControllerClass import RobotController
 
 def map(x,in_min,in_max,out_min,out_max):
-    '''Equivilent of Arduino's map() function
-    
+    '''
+        Equivilent of Arduino's map() function
     '''
     return float((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
 
@@ -145,7 +145,7 @@ def main():
                 # for joint in interpreter.joints:
                     # print(joint.setpoint)
                 t_prev = t
-                
+
             rate.sleep()
                 
 
