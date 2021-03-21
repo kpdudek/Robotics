@@ -275,11 +275,11 @@ void setup() {
     gripper_servo.attach(21,500,2400);
 
     joints[0].set_limits(-1.57,1.57);
-    joints[1].set_limits(-0.5,0.8);
-    joints[2].set_limits(-0.5,1.8);
+    joints[1].set_limits(-0.5,1.57);
+    joints[2].set_limits(-0.1,2.0);
     joints[3].set_limits(-1.57,1.57);
     joints[4].set_limits(-1.4,1.4);
-    joints[5].set_limits(-1.57,1.57);
+    joints[5].set_limits(-3.14,3.14);
     
     // Ros subscribers
     nh.initNode();
