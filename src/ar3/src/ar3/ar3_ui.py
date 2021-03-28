@@ -32,9 +32,9 @@ class AR3Controller(QMainWindow):
         self.screen_height = screen.size().height()
         self.screen_width = screen.size().width()
         self.setWindowTitle("AR3 Controller")
-        welcome_width = 800
-        welcome_height = 600
-        self.setGeometry(math.floor((self.screen_width-welcome_width)/2), math.floor((self.screen_height-welcome_height)/2), welcome_width, welcome_height) 
+        width = 1000
+        height = 900
+        self.setGeometry(math.floor((self.screen_width-width)/2), math.floor((self.screen_height-height)/2), width, height) 
 
         with open(self.ar3_path+'/urdf/ar3.urdf', 'r') as fp:
             urdf = fp.read()
@@ -69,25 +69,41 @@ class AR3Controller(QMainWindow):
         self.program_remove_button.clicked.connect(self.program_remove)
 
         self.jog_x_pos_button.pressed.connect(self.start_jog_x_pos)
-        self.jog_x_pos_button.released.connect(self.stop_jog_x_pos)
+        self.jog_x_pos_button.released.connect(self.stop_jogging)
         self.jog_x_neg_button.pressed.connect(self.start_jog_x_neg)
-        self.jog_x_neg_button.released.connect(self.stop_jog_x_neg)
+        self.jog_x_neg_button.released.connect(self.stop_jogging)
         
         self.jog_y_pos_button.pressed.connect(self.start_jog_y_pos)
-        self.jog_y_pos_button.released.connect(self.stop_jog_y_pos)
+        self.jog_y_pos_button.released.connect(self.stop_jogging)
         self.jog_y_neg_button.pressed.connect(self.start_jog_y_neg)
-        self.jog_y_neg_button.released.connect(self.stop_jog_y_neg)
+        self.jog_y_neg_button.released.connect(self.stop_jogging)
 
         self.jog_z_pos_button.pressed.connect(self.start_jog_z_pos)
-        self.jog_z_pos_button.released.connect(self.stop_jog_z_pos)
+        self.jog_z_pos_button.released.connect(self.stop_jogging)
         self.jog_z_neg_button.pressed.connect(self.start_jog_z_neg)
-        self.jog_z_neg_button.released.connect(self.stop_jog_z_neg)
+        self.jog_z_neg_button.released.connect(self.stop_jogging)
+
+        self.jog_rx_pos_button.pressed.connect(self.start_jog_rx_pos)
+        self.jog_rx_pos_button.released.connect(self.stop_jogging)
+        self.jog_rx_neg_button.pressed.connect(self.start_jog_rx_neg)
+        self.jog_rx_neg_button.released.connect(self.stop_jogging)
+
+        self.jog_ry_pos_button.pressed.connect(self.start_jog_ry_pos)
+        self.jog_ry_pos_button.released.connect(self.stop_jogging)
+        self.jog_ry_neg_button.pressed.connect(self.start_jog_ry_neg)
+        self.jog_ry_neg_button.released.connect(self.stop_jogging)
+
+        self.jog_rz_pos_button.pressed.connect(self.start_jog_rz_pos)
+        self.jog_rz_pos_button.released.connect(self.stop_jogging)
+        self.jog_rz_neg_button.pressed.connect(self.start_jog_rz_neg)
+        self.jog_rz_neg_button.released.connect(self.stop_jogging)
 
         self.actionSave_Queue.triggered.connect(self.save_queue)
         self.actionLoad_Queue.triggered.connect(self.load_queue)
 
-        self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,self.joint_jog_widget.joint_3_setpoint,
-                                self.joint_jog_widget.joint_4_setpoint,self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
+        self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,
+                                self.joint_jog_widget.joint_3_setpoint,self.joint_jog_widget.joint_4_setpoint,
+                                self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
         self.pose_spinboxes = [self.pose_jog_widget.x_spinbox, self.pose_jog_widget.y_spinbox, self.pose_jog_widget.z_spinbox,
                                self.pose_jog_widget.rx_spinbox,self.pose_jog_widget.ry_spinbox,self.pose_jog_widget.rz_spinbox]
         self.joint_lcds = [self.j1_lcd,self.j2_lcd,self.j3_lcd,self.j4_lcd,self.j5_lcd,self.j6_lcd]
@@ -97,99 +113,126 @@ class AR3Controller(QMainWindow):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.jog_joints)
-        self.jog_rate = 5
+        self.jog_rate = 20
+        self.jog_type = 0
         self.joint_jog_idx = 0
         self.joint_jog_dir = 1.0
+        # self.switch_jog_type()
+        self.cartesian_jog_radiobutton.toggled.connect(self.switch_jog_type)
+        self.joint_jog_radiobutton.toggled.connect(self.switch_jog_type)
+        self.ax_labels = [self.ax1_label,self.ax2_label,self.ax3_label,self.ax4_label,self.ax5_label,self.ax6_label]
 
         self.tcp_pose = None
 
-        self.set_jog_type()
         self.show()
+        self.set_jog_type()
 
+    '''
+        Menu Bar Actions
+    '''
     def save_queue(self):
-        print('Saving queue')
-
+        print('Saving queue...')
         fp = open(self.ar3_path+'/src/ar3/programs/test.txt','w')
         for line in self.program_buffer:
             fp.write(line+'\n')
         fp.close()
     
     def load_queue(self):
-        print('Loading queue')
+        print('Loading queue...')
         self.clear_queue()
-
         fp = open(self.ar3_path+'/src/ar3/programs/test.txt','r')
         for line in fp:
             line = line.strip('\n')
             self.add_to_queue(from_buffer=line)
         fp.close()
 
+    '''
+        Jog Controls
+    '''
+    def switch_jog_type(self):
+        if self.cartesian_jog_radiobutton.isChecked():
+            self.jog_type = 1
+            keys = ['X:','Y:','Z:','RX:','RY:','RZ:']
+            for idx in range(6):
+                self.ax_labels[idx].setText(keys[idx])
+        else:
+            self.jog_type = 0
+            for idx in range(6):
+                self.ax_labels[idx].setText('J'+str(idx+1)+":")
+    
+    # Cartesian X
     def start_jog_x_neg(self):
-        print('starting x neg')
-        self.joint_jog_idx = 0
-        self.joint_jog_dir = -1.0
-        self.timer.start(self.jog_rate)
-    def stop_jog_x_neg(self):
-        print('ending x neg')
-        self.timer.stop()
+        self.set_jog_params(0,-1.0)
     def start_jog_x_pos(self):
-        print('starting x pos')
-        self.joint_jog_idx = 0
-        self.joint_jog_dir = 1.0
-        self.timer.start(self.jog_rate)
-    def stop_jog_x_pos(self):
-        print('ending x pos')
-        self.timer.stop()
+        self.set_jog_params(0,1.0)
 
+    # Cartesian Y
     def start_jog_y_neg(self):
-        print('starting y neg')
-        self.joint_jog_idx = 1
-        self.joint_jog_dir = -1.0
-        self.timer.start(self.jog_rate)
-    def stop_jog_y_neg(self):
-        print('ending y neg')
-        self.timer.stop()
+        self.set_jog_params(1,-1.0)
     def start_jog_y_pos(self):
-        print('starting y pos')
-        self.joint_jog_idx = 1
-        self.joint_jog_dir = 1.0
-        self.timer.start(self.jog_rate)
-    def stop_jog_y_pos(self):
-        print('ending y pos')
-        self.timer.stop()
+        self.set_jog_params(1,1.0)
 
+    # Catesian Z
     def start_jog_z_neg(self):
-        print('starting z neg')
-        self.joint_jog_idx = 2
-        self.joint_jog_dir = -1.0
-        self.timer.start(self.jog_rate)
-    def stop_jog_z_neg(self):
-        print('ending z neg')
-        self.timer.stop()
+        self.set_jog_params(2,-1.0)
     def start_jog_z_pos(self):
-        print('starting z pos')
-        self.joint_jog_idx = 2
-        self.joint_jog_dir = 1.0
-        self.timer.start(self.jog_rate)
-    def stop_jog_z_pos(self):
-        print('ending z pos')
+        self.set_jog_params(2,1.0)
+    
+    # Cartesian RX
+    def start_jog_rx_neg(self):
+        self.set_jog_params(3,-1.0)
+    def start_jog_rx_pos(self):
+        self.set_jog_params(3,1.0)
+
+    # Cartesian RY
+    def start_jog_ry_neg(self):
+        self.set_jog_params(4,-1.0)
+    def start_jog_ry_pos(self):
+        self.set_jog_params(4,1.0)
+
+    # Cartesian RZ
+    def start_jog_rz_neg(self):
+        self.set_jog_params(5,-1.0)
+    def start_jog_rz_pos(self):
+        self.set_jog_params(5,1.0)
+
+    def set_jog_params(self,idx,ax_dir):
+        if self.jog_type == 1:
+            self.joint_jog_idx = idx
+            self.joint_jog_dir = ax_dir
+            self.starting_pose = list(self.tcp_pose)
+            self.jog_step = 1
+            self.timer.start(self.jog_rate)
+        elif self.jog_type == 0:
+            self.joint_jog_idx = idx
+            self.joint_jog_dir = ax_dir
+            self.timer.start(self.jog_rate)
+
+    def stop_jogging(self):
         self.timer.stop()
+        self.stop_motion()
+    
+    def stop_motion(self):
+        self.robot_controller.AR3Control.joint_angles = self.feedback_angles
+        self.robot_controller.send_joints()
 
     def jog_joints(self):
-        # print('jogging')
-        pose = list(self.tcp_pose)
-        quat = quaternion_from_euler(pose[3],pose[4],pose[5],'rxyz')
-        rx,ry,rz,rw = quat
-        pose[self.joint_jog_idx] += .005*self.joint_jog_dir
-        x,y,z, = pose[0],pose[1],pose[2]
-        self.qinit = list(self.feedback_angles)
-        angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
-        if not angles:
-            # print("Solution not found!")
-            return
-        else:
+        if self.jog_type == 1:
+            pose = self.starting_pose
+            quat = quaternion_from_euler(pose[3],pose[4],pose[5],'rxyz')
+            rx,ry,rz,rw = quat
+            pose[self.joint_jog_idx] += (.00001*self.jog_step)*self.joint_jog_dir
+            x,y,z, = pose[0],pose[1],pose[2]
+            self.qinit = list(self.feedback_angles)
+            angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
+            if not angles:
+                print("Solution not found!")
+                return
             angles = list(angles)
-            # print("Solution found!")
+            self.jog_step += 1
+        else:
+            angles = list(self.feedback_angles)
+            angles[self.joint_jog_idx] += .01 * self.joint_jog_dir
 
         self.gripper_angle = self.robot_controller.AR3Feedback.gripper_angle
         self.speed = self.speed_spinbox.value()
@@ -197,7 +240,10 @@ class AR3Controller(QMainWindow):
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
         self.robot_controller.AR3Control.joint_angles = angles
         self.robot_controller.send_joints()
-        
+    
+    '''
+        Program Controls
+    '''
     def program_up(self):
         if self.queue_list.count() == 0:
             return
@@ -282,6 +328,9 @@ class AR3Controller(QMainWindow):
         self.queue_thread = threading.Thread(target=self.run_queue)
         self.queue_thread.start()
 
+    '''
+        Move to Pose Controls
+    '''
     def pull_current_config(self):
         idx = 0
         for spinbox in self.joint_spinboxes:
@@ -369,6 +418,9 @@ class AR3Controller(QMainWindow):
         self.robot_controller.AR3Control.joint_angles = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.robot_controller.send_joints()
     
+    '''
+        Feedback Panel
+    '''
     def update_feedback_label(self,data):
         try:
             idx = 0
@@ -399,15 +451,11 @@ def main():
     # create pyqt5 app
     QApplication.setStyle("fusion")
     dark_mode = True
-
     app = QApplication(sys.argv)
-
     palette = DarkColors().palette
     app.setPalette(palette)
-    
     # create the instance of our Window 
     main_window = AR3Controller(app.primaryScreen()) 
-
     # start the app 
     sys.exit(app.exec_()) 
 

@@ -22,6 +22,7 @@ Panels:
   - Class: rviz/Views
     Expanded:
       - /Current View1
+      - /Current View1/Focal Point1
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz/Time
@@ -150,25 +151,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.85127592086792
+      Distance: 2.020787239074707
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.25593188405036926
-        Y: 0.05479222536087036
-        Z: 0.20548522472381592
+        X: 0
+        Y: 0
+        Z: 0.20000000298023224
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5653985738754272
+      Pitch: 0.4708624482154846
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.75859260559082
+      Yaw: 5.554008960723877
     Saved: ~
 Window Geometry:
   Displays:
@@ -186,5 +187,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 8
-  Y: 31
+  X: 0
+  Y: 23
