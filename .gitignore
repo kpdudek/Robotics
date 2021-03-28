@@ -5,3 +5,4 @@ devel/
 logs/
 *.pyc
 __pycache__/
+*:Zone.Identifier
