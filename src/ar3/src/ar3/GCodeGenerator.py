@@ -18,12 +18,12 @@ class GCodeGenerator():
         self.expected_len = 0
         self.previous_pose = [0.0]*6
 
-        with open(self.ar3_path+'/urdf/AR3_noGazebo.urdf', 'r') as fp:
+        with open(self.ar3_path+'/urdf/ar3.urdf', 'r') as fp:
             urdf = fp.read()
-        self.solver = IK("world", "flange", urdf_string=urdf)
+        self.solver = IK("world", "tcp", urdf_string=urdf)
 
     def save_queue(self):
-        print('Saving queue')
+        print('Saving queue.')
         fp = open(self.ar3_path+'/src/ar3/programs/test.txt','w')
         for line in self.program_buffer:
             fp.write(line+'\n')
@@ -71,13 +71,13 @@ class GCodeGenerator():
             return 0
         else:
             print("Solution found!")
-            self.previous_pose = coord
+            self.previous_pose = angles
             return list(angles)
 
 def main():
     gcode_generator = GCodeGenerator()
     x,y,z = -0.0,-0.5,0.3
-    max_rx = 2.9
+    max_rx = 2.7
     horiz_rx = 1.67
 
     # Add home config

@@ -36,9 +36,9 @@ class AR3Controller(QMainWindow):
         welcome_height = 600
         self.setGeometry(math.floor((self.screen_width-welcome_width)/2), math.floor((self.screen_height-welcome_height)/2), welcome_width, welcome_height) 
 
-        with open(self.ar3_path+'/urdf/AR3_noGazebo.urdf', 'r') as fp:
+        with open(self.ar3_path+'/urdf/ar3.urdf', 'r') as fp:
             urdf = fp.read()
-        self.solver = IK("world", "flange", urdf_string=urdf)
+        self.solver = IK("world", "tcp", urdf_string=urdf)
         self.qinit = [0.0] * self.solver.number_of_joints
         
         
@@ -68,6 +68,21 @@ class AR3Controller(QMainWindow):
         self.program_down_button.clicked.connect(self.program_down)
         self.program_remove_button.clicked.connect(self.program_remove)
 
+        self.jog_x_pos_button.pressed.connect(self.start_jog_x_pos)
+        self.jog_x_pos_button.released.connect(self.stop_jog_x_pos)
+        self.jog_x_neg_button.pressed.connect(self.start_jog_x_neg)
+        self.jog_x_neg_button.released.connect(self.stop_jog_x_neg)
+        
+        self.jog_y_pos_button.pressed.connect(self.start_jog_y_pos)
+        self.jog_y_pos_button.released.connect(self.stop_jog_y_pos)
+        self.jog_y_neg_button.pressed.connect(self.start_jog_y_neg)
+        self.jog_y_neg_button.released.connect(self.stop_jog_y_neg)
+
+        self.jog_z_pos_button.pressed.connect(self.start_jog_z_pos)
+        self.jog_z_pos_button.released.connect(self.stop_jog_z_pos)
+        self.jog_z_neg_button.pressed.connect(self.start_jog_z_neg)
+        self.jog_z_neg_button.released.connect(self.stop_jog_z_neg)
+
         self.actionSave_Queue.triggered.connect(self.save_queue)
         self.actionLoad_Queue.triggered.connect(self.load_queue)
 
@@ -79,6 +94,14 @@ class AR3Controller(QMainWindow):
         self.tcp_lcds = [self.x_lcd,self.y_lcd,self.z_lcd,self.rx_lcd,self.ry_lcd,self.rz_lcd]
 
         self.program_buffer = []
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.jog_joints)
+        self.jog_rate = 5
+        self.joint_jog_idx = 0
+        self.joint_jog_dir = 1.0
+
+        self.tcp_pose = None
 
         self.set_jog_type()
         self.show()
@@ -100,6 +123,80 @@ class AR3Controller(QMainWindow):
             line = line.strip('\n')
             self.add_to_queue(from_buffer=line)
         fp.close()
+
+    def start_jog_x_neg(self):
+        print('starting x neg')
+        self.joint_jog_idx = 0
+        self.joint_jog_dir = -1.0
+        self.timer.start(self.jog_rate)
+    def stop_jog_x_neg(self):
+        print('ending x neg')
+        self.timer.stop()
+    def start_jog_x_pos(self):
+        print('starting x pos')
+        self.joint_jog_idx = 0
+        self.joint_jog_dir = 1.0
+        self.timer.start(self.jog_rate)
+    def stop_jog_x_pos(self):
+        print('ending x pos')
+        self.timer.stop()
+
+    def start_jog_y_neg(self):
+        print('starting y neg')
+        self.joint_jog_idx = 1
+        self.joint_jog_dir = -1.0
+        self.timer.start(self.jog_rate)
+    def stop_jog_y_neg(self):
+        print('ending y neg')
+        self.timer.stop()
+    def start_jog_y_pos(self):
+        print('starting y pos')
+        self.joint_jog_idx = 1
+        self.joint_jog_dir = 1.0
+        self.timer.start(self.jog_rate)
+    def stop_jog_y_pos(self):
+        print('ending y pos')
+        self.timer.stop()
+
+    def start_jog_z_neg(self):
+        print('starting z neg')
+        self.joint_jog_idx = 2
+        self.joint_jog_dir = -1.0
+        self.timer.start(self.jog_rate)
+    def stop_jog_z_neg(self):
+        print('ending z neg')
+        self.timer.stop()
+    def start_jog_z_pos(self):
+        print('starting z pos')
+        self.joint_jog_idx = 2
+        self.joint_jog_dir = 1.0
+        self.timer.start(self.jog_rate)
+    def stop_jog_z_pos(self):
+        print('ending z pos')
+        self.timer.stop()
+
+    def jog_joints(self):
+        # print('jogging')
+        pose = list(self.tcp_pose)
+        quat = quaternion_from_euler(pose[3],pose[4],pose[5],'rxyz')
+        rx,ry,rz,rw = quat
+        pose[self.joint_jog_idx] += .005*self.joint_jog_dir
+        x,y,z, = pose[0],pose[1],pose[2]
+        self.qinit = list(self.feedback_angles)
+        angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
+        if not angles:
+            # print("Solution not found!")
+            return
+        else:
+            angles = list(angles)
+            # print("Solution found!")
+
+        self.gripper_angle = self.robot_controller.AR3Feedback.gripper_angle
+        self.speed = self.speed_spinbox.value()
+        self.robot_controller.AR3Control.speed = self.speed
+        self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
+        self.robot_controller.AR3Control.joint_angles = angles
+        self.robot_controller.send_joints()
         
     def program_up(self):
         if self.queue_list.count() == 0:
@@ -191,12 +288,12 @@ class AR3Controller(QMainWindow):
             spinbox.setValue(self.feedback_angles[idx])
             idx += 1
 
-        (trans,rot) = self.listener.lookupTransform('/world', '/flange', rospy.Time(0))
+        (trans,rot) = self.listener.lookupTransform('/world', '/tcp', rospy.Time(0))
         rot = euler_from_quaternion(rot,'rxyz')
-        tcp_pose = list(trans)+list(rot)
+        self.tcp_pose = list(trans)+list(rot)
         idx = 0
         for spinbox in self.pose_spinboxes:
-            spinbox.setValue(tcp_pose[idx])
+            spinbox.setValue(self.tcp_pose[idx])
             idx += 1
 
         self.gripper_angle_spinbox.setValue(int(self.robot_controller.AR3Feedback.gripper_angle))
@@ -279,13 +376,14 @@ class AR3Controller(QMainWindow):
                 lcd.display('%0.3f'%data.joint_angles[idx])
                 idx += 1
             self.feedback_angles = data.joint_angles
+            self.ar3_feedback = data
 
-            (trans,rot) = self.listener.lookupTransform('/world', '/flange', rospy.Time(0))
+            (trans,rot) = self.listener.lookupTransform('/world', '/tcp', rospy.Time(0))
             rot = euler_from_quaternion(rot,'rxyz')
-            tcp_pose = list(trans)+list(rot)
+            self.tcp_pose = list(trans)+list(rot)
             idx = 0
             for lcd in self.tcp_lcds:
-                lcd.display('%0.3f'%tcp_pose[idx])
+                lcd.display('%0.3f'%self.tcp_pose[idx])
                 idx += 1
 
             self.gripper_lcd.display(data.gripper_angle)

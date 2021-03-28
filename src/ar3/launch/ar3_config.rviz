@@ -69,6 +69,11 @@ Visualization Manager:
           Show Axes: true
           Show Trail: false
           Value: true
+        eoat:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         flange:
           Alpha: 1
           Show Axes: true
@@ -103,6 +108,10 @@ Visualization Manager:
           Show Axes: true
           Show Trail: false
           Value: true
+        tcp:
+          Alpha: 1
+          Show Axes: true
+          Show Trail: false
         world:
           Alpha: 1
           Show Axes: true

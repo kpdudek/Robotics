@@ -20,7 +20,7 @@ namespace ar3
       _resting_type resting;
       typedef int8_t _running_type;
       _running_type running;
-      typedef int8_t _gripper_angle_type;
+      typedef int16_t _gripper_angle_type;
       _gripper_angle_type gripper_angle;
       int64_t encoder_pulses[6];
       float joint_angles[6];
@@ -70,11 +70,12 @@ namespace ar3
       *(outbuffer + offset + 0) = (u_running.base >> (8 * 0)) & 0xFF;
       offset += sizeof(this->running);
       union {
-        int8_t real;
-        uint8_t base;
+        int16_t real;
+        uint16_t base;
       } u_gripper_angle;
       u_gripper_angle.real = this->gripper_angle;
       *(outbuffer + offset + 0) = (u_gripper_angle.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_gripper_angle.base >> (8 * 1)) & 0xFF;
       offset += sizeof(this->gripper_angle);
       for( uint32_t i = 0; i < 6; i++){
       union {
@@ -137,11 +138,12 @@ namespace ar3
       this->running = u_running.real;
       offset += sizeof(this->running);
       union {
-        int8_t real;
-        uint8_t base;
+        int16_t real;
+        uint16_t base;
       } u_gripper_angle;
       u_gripper_angle.base = 0;
-      u_gripper_angle.base |= ((uint8_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_gripper_angle.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_gripper_angle.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
       this->gripper_angle = u_gripper_angle.real;
       offset += sizeof(this->gripper_angle);
       for( uint32_t i = 0; i < 6; i++){
@@ -171,7 +173,7 @@ namespace ar3
     }
 
     const char * getType(){ return "ar3/ar3_feedback"; };
-    const char * getMD5(){ return "64163ea4ea47214d9da1c0355fe48ee5"; };
+    const char * getMD5(){ return "b2ae8019c403b619d5c78404b69af7b5"; };
 
   };
 

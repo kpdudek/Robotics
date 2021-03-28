@@ -1,0 +1,291 @@
+<?xml version="1.0"?>
+<!-- Revolute-Revolute Manipulator -->
+<robot name="ar3" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+
+  <!-- Joint offsets -->
+  <xacro:property name="joint1_x" value="0"/>
+  <xacro:property name="joint1_y" value="0"/>
+  <xacro:property name="joint1_z" value="0"/>
+  
+  <xacro:property name="joint2_x" value=".0508"/>
+  <xacro:property name="joint2_y" value="-.06786547"/>
+  <xacro:property name="joint2_z" value=".13907540"/>
+
+  <xacro:property name="joint3_x" value="-.015"/>
+  <xacro:property name="joint3_y" value="0"/>
+  <xacro:property name="joint3_z" value=".305"/>
+
+  <xacro:property name="joint4_x" value="-0.036"/>
+  <xacro:property name="joint4_y" value="0"/>
+  <xacro:property name="joint4_z" value="0.05"/>
+
+  <xacro:property name="joint5_x" value="0"/>
+  <xacro:property name="joint5_y" value="0"/>
+  <xacro:property name="joint5_z" value="0.172"/>
+
+  <xacro:property name="joint6_x" value="0"/>
+  <xacro:property name="joint6_y" value="0"/>
+  <xacro:property name="joint6_z" value="0.015"/>
+
+  <xacro:property name="flange_x" value="-0.0"/>
+  <xacro:property name="flange_y" value="0.0"/>
+  <xacro:property name="flange_z" value="0.016"/>
+
+  <xacro:property name="tcp_x" value="-0.0"/>
+  <xacro:property name="tcp_y" value="0.0"/>
+  <xacro:property name="tcp_z" value="0.08261"/>
+
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find ar3)/urdf/materials.xacro" />
+
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <link name="world"/>
+
+  <!-- Robot to Environment-->
+  <joint name="BaseJoint" type="fixed">
+    <parent link="world"/>
+    <child link="base"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7"/>
+  </joint>
+
+    <!-- BASE -->
+  <link name="base">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Base.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Base.dae"/>
+      </geometry>
+      
+    </visual>
+  </link>
+
+  <!-- Link 1 -->
+  <link name="link1">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link1.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link1.dae"/>
+      </geometry>
+      
+    </visual>
+  </link>
+
+  <!-- JOINT 1 -->
+  <joint name="joint1" type="revolute">
+    <parent link="base"/>
+    <child link="link1"/>
+    <origin xyz="${joint1_x} ${joint1_y} ${joint1_z}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7"/>
+    <limit lower="-1.57" upper="1.57" effort="30.0" velocity="10.0"/>
+  </joint>
+
+  <!-- Link 2 -->
+  <link name="link2">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link2.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link2.dae"/>
+      </geometry>
+      
+    </visual>
+  </link>
+
+  <!-- JOINT 2 -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="${joint2_x} ${joint2_y} ${joint2_z}" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <dynamics damping="0.7"/>
+    <limit lower="-0.5" upper="1.57" effort="30.0" velocity="10.0"/>
+  </joint>
+
+  <!-- Link 3 -->
+  <link name="link3">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link3.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link3.dae"/>
+      </geometry>
+      
+    </visual>
+  </link>
+
+  <!-- JOINT 3 -->
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="${joint3_x} ${joint3_y} ${joint3_z}" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <dynamics damping="0.7"/>
+    <limit lower="-0.1" upper="2.0" effort="30.0" velocity="10.0"/>
+  </joint>
+
+  <!-- LINK 4-->
+  <link name="link4">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link4.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link4.dae"/>
+      </geometry>
+      
+    </visual>
+  </link>
+
+  <!-- JOINT 4 -->
+  <joint name="joint4" type="revolute">
+    <parent link="link3"/>
+    <child link="link4"/>
+    <origin xyz="${joint4_x} ${joint4_y} ${joint4_z}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7"/>
+    <limit lower="-1.57" upper="1.57" effort="30.0" velocity="10.0"/>
+  </joint>
+
+  <!-- LINK 5-->
+  <link name="link5">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link5.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link5.dae"/>
+      </geometry>
+      
+    </visual>
+  </link>
+
+  <!-- JOINT 5 -->
+  <joint name="joint5" type="revolute">
+    <parent link="link4"/>
+    <child link="link5"/>
+    <origin xyz="${joint5_x} ${joint5_y} ${joint5_z}" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <dynamics damping="0.7"/>
+    <limit lower="-1.4" upper="1.4" effort="30.0" velocity="10.0"/>
+  </joint>
+
+  <!-- LINK 6-->
+  <link name="link6">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link6.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/Link6.dae"/>
+      </geometry>
+      
+    </visual>
+  </link>
+
+  <!-- JOINT 6 -->
+  <joint name="joint6" type="revolute">
+    <parent link="link5"/>
+    <child link="link6"/>
+    <origin xyz="${joint6_x} ${joint6_y} ${joint6_z}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7"/>
+    <limit lower="-3.14" upper="3.14" effort="30.0" velocity="10.0"/>
+  </joint>
+
+  <!-- Flange Frame -->
+  <link name="flange"/>
+
+  <!-- Flange joint -->
+  <joint name="flange_joint" type="fixed">
+    <parent link="link6"/>
+    <child link="flange"/>
+    <origin xyz="${flange_x} ${flange_y} ${flange_z}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- EOAT -->
+  <link name="eoat">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/gripper.dae"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	      <mesh filename="file://$(find ar3)/urdf/meshes/gripper.dae"/>
+      </geometry>
+      <!--  -->
+    </visual>
+  </link>
+
+  <!-- EOAT Joint -->
+  <joint name="eoat_joint" type="fixed">
+    <parent link="flange"/>
+    <child link="eoat"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- TCP Frame -->
+  <link name="tcp"/>
+
+  <!-- Flange joint -->
+  <joint name="tcp_joint" type="fixed">
+    <parent link="flange"/>
+    <child link="tcp"/>
+    <origin xyz="${tcp_x} ${tcp_y} ${tcp_z}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+<!-- END OF ROBOT -->
+</robot>

@@ -2,7 +2,7 @@ int8 home
 int8 run
 int8 rest
 
-int8 gripper_angle
+int16 gripper_angle
 float64 speed
 
 float64[6] joint_angles

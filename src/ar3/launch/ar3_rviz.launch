@@ -1,5 +1,5 @@
 <launch>
-  <arg name="model" default="$(find ar3)/urdf/AR3_noGazebo.urdf"/>
+  <arg name="model" default="$(find ar3)/urdf/ar3.urdf"/>
   <arg name="rvizconfig" default="$(find ar3)/launch/ar3_config.rviz" />
 
   <param name="robot_description" textfile="$(arg model)"/>
