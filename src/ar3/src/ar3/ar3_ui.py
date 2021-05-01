@@ -41,7 +41,6 @@ class AR3Controller(QMainWindow):
         self.solver = IK("world", "tcp", urdf_string=urdf)
         self.qinit = [0.0] * self.solver.number_of_joints
         
-        
         self.ar3_feeback_sub = rospy.Subscriber('/AR3/Feedback',ar3_feedback,self.update_feedback_label)
         self.listener = tf.TransformListener()
         self.robot_controller = RobotController()
@@ -67,6 +66,7 @@ class AR3Controller(QMainWindow):
         self.program_up_button.clicked.connect(self.program_up)
         self.program_down_button.clicked.connect(self.program_down)
         self.program_remove_button.clicked.connect(self.program_remove)
+        self.add_program_wait_button.clicked.connect(self.add_wait_to_queue)
 
         self.jog_x_pos_button.pressed.connect(self.start_jog_x_pos)
         self.jog_x_pos_button.released.connect(self.stop_jogging)
@@ -117,7 +117,6 @@ class AR3Controller(QMainWindow):
         self.jog_type = 0
         self.joint_jog_idx = 0
         self.joint_jog_dir = 1.0
-        # self.switch_jog_type()
         self.cartesian_jog_radiobutton.toggled.connect(self.switch_jog_type)
         self.joint_jog_radiobutton.toggled.connect(self.switch_jog_type)
         self.ax_labels = [self.ax1_label,self.ax2_label,self.ax3_label,self.ax4_label,self.ax5_label,self.ax6_label]
@@ -126,6 +125,7 @@ class AR3Controller(QMainWindow):
 
         self.show()
         self.set_jog_type()
+        self.switch_jog_type()
 
     '''
         Menu Bar Actions
@@ -247,29 +247,56 @@ class AR3Controller(QMainWindow):
     def program_up(self):
         if self.queue_list.count() == 0:
             return
-        
+
+        self.cursor_idx = self.queue_list.currentRow()
+        program_line = self.queue_list.takeItem(self.cursor_idx)
+        self.program_buffer.pop(self.cursor_idx)
+
         self.cursor_idx -= 1
         if self.cursor_idx < 0:
             self.cursor_idx = 0
+        self.queue_list.insertItem(self.cursor_idx,program_line)
+        self.program_buffer.insert(self.cursor_idx,program_line)
         self.queue_list.setCurrentRow(self.cursor_idx)
 
     def program_down(self):
-        count = self.queue_list.count()
-        if count == 0:
+        if self.queue_list.count() == 0:
             return
         
+        self.cursor_idx = self.queue_list.currentRow()
+        program_line = self.queue_list.takeItem(self.cursor_idx)
+        self.program_buffer.pop(self.cursor_idx)
+
         self.cursor_idx += 1
         if self.cursor_idx >= count:
             self.cursor_idx = count-1
+        self.queue_list.insertItem(self.cursor_idx,program_line)
+        self.program_buffer.insert(self.cursor_idx,program_line)
         self.queue_list.setCurrentRow(self.cursor_idx)
     
     def program_remove(self):
+        if self.queue_list.count() == 0:
+            return
+        self.cursor_idx = self.queue_list.currentRow()
         self.queue_list.takeItem(self.cursor_idx)
         self.program_buffer.pop(self.cursor_idx)
 
         count = self.queue_list.count()
         if self.cursor_idx > count-1:
             self.cursor_idx = count-1
+    
+    def add_wait_to_queue(self):
+        delay = self.program_wait_spinbox.value()
+        program_line = ''
+        program_line += 'Wait'
+        program_line += ' %0.2f'%(delay)
+
+        self.program_buffer.append(program_line)
+
+        self.cursor_idx += 1
+        self.queue_list.insertItem(self.cursor_idx,program_line)
+        self.queue_list.setCurrentRow(self.cursor_idx)
+        print("Queueing: {}".format(program_line))
 
     def add_to_queue(self,from_buffer=None):
         if from_buffer:
@@ -299,32 +326,41 @@ class AR3Controller(QMainWindow):
         while flag:
             flag = False
             for idx in range(0,6):
-                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.03:
+                if abs(self.setpoint_angles[idx] - self.feedback_angles[idx]) > 0.01:
                     flag = True
+            if abs(self.gripper_angle - self.gripper_feedback) >= 1.0:
+                flag = True
 
     def run_queue(self):
         for idx in range(self.queue_list.count()):
             program_line = self.queue_list.item(idx).text()
             tokens = program_line.split(' ')
+            if tokens[0] == 'Wait':
+                time.sleep(float(token[1]))
+            if tokens[0] == 'JMove':
+                angles = tokens[1:7]
+                for n in range(0,6):
+                    angles[n] = float(angles[n])
+                gripper_val = int(tokens[7])
+                speed = float(tokens[8])
 
-            angles = tokens[1:7]
-            for n in range(0,6):
-                angles[n] = float(angles[n])
-            gripper_val = int(tokens[7])
-            speed = float(tokens[8])
+                self.setpoint_angles = angles
+                print("Moving to: {} {} {}".format(angles,gripper_val,speed))
 
-            self.setpoint_angles = angles
-            print("Moving to: {} {} {}".format(angles,gripper_val,speed))
+                self.robot_controller.AR3Control.speed = speed
+                self.robot_controller.AR3Control.gripper_angle = gripper_val
+                self.robot_controller.AR3Control.joint_angles = angles
+                self.robot_controller.send_joints()
 
-            self.robot_controller.AR3Control.speed = speed
-            self.robot_controller.AR3Control.gripper_angle = gripper_val
-            self.robot_controller.AR3Control.joint_angles = angles
-            self.robot_controller.send_joints()
-
-            self.wait_for_move()
+                self.wait_for_move()
+            else:
+                print('Unrecognized command!')
         print("Program completed.")
 
     def start_queue(self):
+        if self.queue_list.count() == 0:
+            return
+        
         self.queue_thread = threading.Thread(target=self.run_queue)
         self.queue_thread.start()
 
@@ -406,7 +442,7 @@ class AR3Controller(QMainWindow):
 
         self.robot_controller.AR3Control.speed = self.speed
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle        
-        self.robot_controller.AR3Control.joint_angles = [0.007,0.585,1.020,-0.002,1.294,0.007]
+        self.robot_controller.AR3Control.joint_angles = [0.0,0.0,1.57,0.0,1.4,0.0]
         self.robot_controller.send_joints()
 
     def zero(self):
@@ -439,6 +475,7 @@ class AR3Controller(QMainWindow):
                 idx += 1
 
             self.gripper_lcd.display(data.gripper_angle)
+            self.gripper_feedback = data.gripper_angle
             
             if data.eStop:
                 self.state_label.setText("E-STOP PRESSED")

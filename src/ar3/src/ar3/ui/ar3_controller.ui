@@ -1229,19 +1229,31 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="7" column="0" colspan="2">
-           <widget class="QPushButton" name="clear_queue_button">
+          <item row="3" column="2">
+           <widget class="QPushButton" name="program_down_button">
             <property name="font">
              <font>
               <pointsize>14</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>Clear</string>
+             <string>Down</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" rowspan="3">
+          <item row="4" column="2">
+           <widget class="QPushButton" name="program_remove_button">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Remove</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" rowspan="3" colspan="2">
            <widget class="QListWidget" name="queue_list">
             <property name="minimumSize">
              <size>
@@ -1256,7 +1268,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="2" column="2">
            <widget class="QPushButton" name="program_up_button">
             <property name="font">
              <font>
@@ -1268,19 +1280,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QPushButton" name="program_down_button">
-            <property name="font">
-             <font>
-              <pointsize>14</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Down</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0" colspan="2">
+          <item row="6" column="2">
            <widget class="QPushButton" name="start_queue_button">
             <property name="font">
              <font>
@@ -1292,19 +1292,19 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QPushButton" name="program_remove_button">
+          <item row="7" column="2">
+           <widget class="QPushButton" name="clear_queue_button">
             <property name="font">
              <font>
               <pointsize>14</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>Remove</string>
+             <string>Clear</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="2">
+          <item row="6" column="0" colspan="2">
            <widget class="QPushButton" name="add_to_queue_button">
             <property name="font">
              <font>
@@ -1313,6 +1313,30 @@
             </property>
             <property name="text">
              <string>Add Current Config</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QDoubleSpinBox" name="program_wait_spinbox">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QPushButton" name="add_program_wait_button">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Add Wait</string>
             </property>
            </widget>
           </item>
@@ -1449,8 +1473,6 @@
   <tabstop>program_up_button</tabstop>
   <tabstop>program_down_button</tabstop>
   <tabstop>program_remove_button</tabstop>
-  <tabstop>start_queue_button</tabstop>
-  <tabstop>clear_queue_button</tabstop>
  </tabstops>
  <resources/>
  <connections>

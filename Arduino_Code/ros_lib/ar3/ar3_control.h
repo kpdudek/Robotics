@@ -22,6 +22,8 @@ namespace ar3
       _gripper_angle_type gripper_angle;
       typedef float _speed_type;
       _speed_type speed;
+      typedef int8_t _accelerate_type;
+      _accelerate_type accelerate;
       float joint_angles[6];
 
     ar3_control():
@@ -30,6 +32,7 @@ namespace ar3
       rest(0),
       gripper_angle(0),
       speed(0),
+      accelerate(0),
       joint_angles()
     {
     }
@@ -67,6 +70,13 @@ namespace ar3
       *(outbuffer + offset + 1) = (u_gripper_angle.base >> (8 * 1)) & 0xFF;
       offset += sizeof(this->gripper_angle);
       offset += serializeAvrFloat64(outbuffer + offset, this->speed);
+      union {
+        int8_t real;
+        uint8_t base;
+      } u_accelerate;
+      u_accelerate.real = this->accelerate;
+      *(outbuffer + offset + 0) = (u_accelerate.base >> (8 * 0)) & 0xFF;
+      offset += sizeof(this->accelerate);
       for( uint32_t i = 0; i < 6; i++){
       offset += serializeAvrFloat64(outbuffer + offset, this->joint_angles[i]);
       }
@@ -110,6 +120,14 @@ namespace ar3
       this->gripper_angle = u_gripper_angle.real;
       offset += sizeof(this->gripper_angle);
       offset += deserializeAvrFloat64(inbuffer + offset, &(this->speed));
+      union {
+        int8_t real;
+        uint8_t base;
+      } u_accelerate;
+      u_accelerate.base = 0;
+      u_accelerate.base |= ((uint8_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      this->accelerate = u_accelerate.real;
+      offset += sizeof(this->accelerate);
       for( uint32_t i = 0; i < 6; i++){
       offset += deserializeAvrFloat64(inbuffer + offset, &(this->joint_angles[i]));
       }
@@ -117,7 +135,7 @@ namespace ar3
     }
 
     const char * getType(){ return "ar3/ar3_control"; };
-    const char * getMD5(){ return "95cd580f727231397863d637f25bba03"; };
+    const char * getMD5(){ return "9370f206939c9881ea6a7deb142af640"; };
 
   };
 
