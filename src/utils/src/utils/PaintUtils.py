@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from PyQt5.QtWidgets import * 
-from PyQt5 import QtCore, QtGui, QtSvg, uic
+from PyQt5 import QtCore, QtGui, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 
@@ -39,7 +39,7 @@ class DarkColors(ElementColors):
         self.palette.setColor(QPalette.ToolTipText, Qt.white)
         self.palette.setColor(QPalette.Text, Qt.white)
         self.palette.setColor(QPalette.Button, QColor(53, 53, 53))
-        self.palette.setColor(QPalette.ButtonText, QColor(255, 153, 85)) #Qt.white
+        self.palette.setColor(QPalette.ButtonText, Qt.white)#QColor(255, 153, 85)) #Qt.white
         self.palette.setColor(QPalette.BrightText, Qt.red)
         self.palette.setColor(QPalette.Link, QColor(255, 153, 85))
         self.palette.setColor(QPalette.Highlight, QColor(255, 153, 85))

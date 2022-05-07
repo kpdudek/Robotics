@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from PyQt5.QtWidgets import * 
-from PyQt5 import QtCore, QtGui, QtSvg, uic
+from PyQt5 import QtCore, QtGui, uic
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 import random, sys, os, math, time, numpy
@@ -34,8 +34,8 @@ class AR3Controller(QMainWindow):
         self.setWindowTitle("AR3 Controller")
         width = 1000
         height = 900
-        self.setGeometry(math.floor((self.screen_width-width)/2), math.floor((self.screen_height-height)/2), width, height) 
-
+        # self.setGeometry(math.floor((self.screen_width-width)/2), math.floor((self.screen_height-height)/2), width, height) 
+        self.setGeometry(50,50,1600,1000)
         with open(self.ar3_path+'/urdf/ar3.urdf', 'r') as fp:
             urdf = fp.read()
         self.solver = IK("world", "tcp", urdf_string=urdf)
@@ -45,6 +45,7 @@ class AR3Controller(QMainWindow):
         self.listener = tf.TransformListener()
         self.robot_controller = RobotController()
         self.robot_controller.AR3Control.run = 1
+        self.robot_controller.AR3Control.accelerate = 0
         self.feedback_angles = []
         self.setpoint_angles = []
 
@@ -113,7 +114,7 @@ class AR3Controller(QMainWindow):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.jog_joints)
-        self.jog_rate = 20
+        self.jog_rate = 1
         self.jog_type = 0
         self.joint_jog_idx = 0
         self.joint_jog_dir = 1.0
@@ -236,6 +237,7 @@ class AR3Controller(QMainWindow):
 
         self.gripper_angle = self.robot_controller.AR3Feedback.gripper_angle
         self.speed = self.speed_spinbox.value()
+        self.robot_controller.AR3Control.accelerate = 0
         self.robot_controller.AR3Control.speed = self.speed
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
         self.robot_controller.AR3Control.joint_angles = angles
@@ -347,6 +349,7 @@ class AR3Controller(QMainWindow):
                 self.setpoint_angles = angles
                 print("Moving to: {} {} {}".format(angles,gripper_val,speed))
 
+                self.robot_controller.AR3Control.accelerate = 1
                 self.robot_controller.AR3Control.speed = speed
                 self.robot_controller.AR3Control.gripper_angle = gripper_val
                 self.robot_controller.AR3Control.joint_angles = angles
@@ -397,6 +400,8 @@ class AR3Controller(QMainWindow):
         self.robot_controller.send_joints()
 
     def goto(self):
+        self.robot_controller.AR3Control.accelerate = 1
+        
         if self.joint_radiobutton.isChecked():
             angles = []
             for spinbox in self.joint_spinboxes:
