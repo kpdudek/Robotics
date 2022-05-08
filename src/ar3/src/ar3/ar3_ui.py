@@ -22,20 +22,17 @@ class AR3Controller(QMainWindow):
     def __init__(self,screen):
         QMainWindow.__init__(self)
         rospy.init_node('ar3_ui', anonymous='True')
+        self.setWindowTitle("AR3 Controller")
+        width = 1200
+        height = 900
+        self.setGeometry(0,0,width,height)
 
         self.rospack = rospkg.RosPack()
         self.ar3_path = self.rospack.get_path('ar3')
-
         uic.loadUi(self.ar3_path+'/src/ar3/ui/ar3_controller.ui', self)
         self.joint_jog_widget = uic.loadUi(self.ar3_path+'/src/ar3/ui/joint_controller.ui')
         self.pose_jog_widget = uic.loadUi(self.ar3_path+'/src/ar3/ui/pose_controller.ui')
-        self.screen_height = screen.size().height()
-        self.screen_width = screen.size().width()
-        self.setWindowTitle("AR3 Controller")
-        width = 1000
-        height = 900
-        # self.setGeometry(math.floor((self.screen_width-width)/2), math.floor((self.screen_height-height)/2), width, height) 
-        self.setGeometry(50,50,1600,1000)
+
         with open(self.ar3_path+'/urdf/ar3.urdf', 'r') as fp:
             urdf = fp.read()
         self.solver = IK("world", "tcp", urdf_string=urdf)
@@ -45,9 +42,41 @@ class AR3Controller(QMainWindow):
         self.listener = tf.TransformListener()
         self.robot_controller = RobotController()
         self.robot_controller.AR3Control.run = 1
-        self.robot_controller.AR3Control.accelerate = 0
+        self.robot_controller.AR3Control.accelerate = 1
         self.feedback_angles = []
         self.setpoint_angles = []
+
+        # Move Commands
+        self.move_to_pose_button.clicked.connect(self.move_to_pose)
+        self.move_to_rest_button.clicked.connect(self.move_to_rest)
+        self.move_to_home_button.clicked.connect(self.move_to_home)
+        self.move_gripper_button.clicked.connect(self.move_gripper)
+        self.pull_current_config_button.clicked.connect(self.pull_current_config)
+
+        self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,
+                                self.joint_jog_widget.joint_3_setpoint,self.joint_jog_widget.joint_4_setpoint,
+                                self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
+        self.pose_spinboxes = [self.pose_jog_widget.x_spinbox, self.pose_jog_widget.y_spinbox, self.pose_jog_widget.z_spinbox,
+                               self.pose_jog_widget.rx_spinbox,self.pose_jog_widget.ry_spinbox,self.pose_jog_widget.rz_spinbox]
+
+        # Program Operations
+        self.program_buffer = []
+        self.cursor_idx = -1
+        self.add_to_queue_button.clicked.connect(self.add_to_queue)
+        self.start_queue_button.clicked.connect(self.start_queue)
+        self.clear_queue_button.clicked.connect(self.clear_queue)
+        self.program_up_button.clicked.connect(self.program_up)
+        self.program_down_button.clicked.connect(self.program_down)
+        self.program_remove_button.clicked.connect(self.program_remove)
+        self.add_program_wait_button.clicked.connect(self.add_wait_to_queue)
+
+        # Jog Panel
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.jog_joints)
+        self.jog_rate = 1
+        self.jog_type = 0
+        self.joint_jog_idx = 0
+        self.joint_jog_dir = 1.0
 
         self.joint_radiobutton.toggled.connect(self.set_jog_type)
         self.pose_radiobutton.toggled.connect(self.set_jog_type)
@@ -55,19 +84,9 @@ class AR3Controller(QMainWindow):
         self.jog_layout.addWidget(self.pose_jog_widget)
         self.pose_jog_widget.hide()
 
-        self.cursor_idx = -1
-        self.goto_button.clicked.connect(self.goto)
-        self.rest_button.clicked.connect(self.rest)
-        self.zero_button.clicked.connect(self.zero)
-        self.move_gripper_button.clicked.connect(self.move_gripper)
-        self.add_to_queue_button.clicked.connect(self.add_to_queue)
-        self.start_queue_button.clicked.connect(self.start_queue)
-        self.clear_queue_button.clicked.connect(self.clear_queue)
-        self.pull_current_config_button.clicked.connect(self.pull_current_config)
-        self.program_up_button.clicked.connect(self.program_up)
-        self.program_down_button.clicked.connect(self.program_down)
-        self.program_remove_button.clicked.connect(self.program_remove)
-        self.add_program_wait_button.clicked.connect(self.add_wait_to_queue)
+        self.cartesian_jog_radiobutton.toggled.connect(self.switch_jog_type)
+        self.joint_jog_radiobutton.toggled.connect(self.switch_jog_type)
+        self.ax_labels = [self.ax1_label,self.ax2_label,self.ax3_label,self.ax4_label,self.ax5_label,self.ax6_label]
 
         self.jog_x_pos_button.pressed.connect(self.start_jog_x_pos)
         self.jog_x_pos_button.released.connect(self.stop_jogging)
@@ -101,28 +120,11 @@ class AR3Controller(QMainWindow):
 
         self.actionSave_Queue.triggered.connect(self.save_queue)
         self.actionLoad_Queue.triggered.connect(self.load_queue)
-
-        self.joint_spinboxes = [self.joint_jog_widget.joint_1_setpoint,self.joint_jog_widget.joint_2_setpoint,
-                                self.joint_jog_widget.joint_3_setpoint,self.joint_jog_widget.joint_4_setpoint,
-                                self.joint_jog_widget.joint_5_setpoint,self.joint_jog_widget.joint_6_setpoint]
-        self.pose_spinboxes = [self.pose_jog_widget.x_spinbox, self.pose_jog_widget.y_spinbox, self.pose_jog_widget.z_spinbox,
-                               self.pose_jog_widget.rx_spinbox,self.pose_jog_widget.ry_spinbox,self.pose_jog_widget.rz_spinbox]
+        
+        # Feedback Labels
+        self.tcp_pose = None
         self.joint_lcds = [self.j1_lcd,self.j2_lcd,self.j3_lcd,self.j4_lcd,self.j5_lcd,self.j6_lcd]
         self.tcp_lcds = [self.x_lcd,self.y_lcd,self.z_lcd,self.rx_lcd,self.ry_lcd,self.rz_lcd]
-
-        self.program_buffer = []
-
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.jog_joints)
-        self.jog_rate = 1
-        self.jog_type = 0
-        self.joint_jog_idx = 0
-        self.joint_jog_dir = 1.0
-        self.cartesian_jog_radiobutton.toggled.connect(self.switch_jog_type)
-        self.joint_jog_radiobutton.toggled.connect(self.switch_jog_type)
-        self.ax_labels = [self.ax1_label,self.ax2_label,self.ax3_label,self.ax4_label,self.ax5_label,self.ax6_label]
-
-        self.tcp_pose = None
 
         self.show()
         self.set_jog_type()
@@ -264,6 +266,7 @@ class AR3Controller(QMainWindow):
     def program_down(self):
         if self.queue_list.count() == 0:
             return
+        count = self.queue_list.count()
         
         self.cursor_idx = self.queue_list.currentRow()
         program_line = self.queue_list.takeItem(self.cursor_idx)
@@ -338,7 +341,7 @@ class AR3Controller(QMainWindow):
             program_line = self.queue_list.item(idx).text()
             tokens = program_line.split(' ')
             if tokens[0] == 'Wait':
-                time.sleep(float(token[1]))
+                time.sleep(float(tokens[1]))
             if tokens[0] == 'JMove':
                 angles = tokens[1:7]
                 for n in range(0,6):
@@ -399,7 +402,7 @@ class AR3Controller(QMainWindow):
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
         self.robot_controller.send_joints()
 
-    def goto(self):
+    def move_to_pose(self):
         self.robot_controller.AR3Control.accelerate = 1
         
         if self.joint_radiobutton.isChecked():
@@ -441,7 +444,7 @@ class AR3Controller(QMainWindow):
             self.robot_controller.AR3Control.joint_angles = angles
             self.robot_controller.send_joints()
 
-    def rest(self):
+    def move_to_rest(self):
         self.gripper_angle = self.gripper_angle_spinbox.value()
         self.speed = self.speed_spinbox.value()
 
@@ -450,7 +453,7 @@ class AR3Controller(QMainWindow):
         self.robot_controller.AR3Control.joint_angles = [0.0,0.0,1.57,0.0,1.4,0.0]
         self.robot_controller.send_joints()
 
-    def zero(self):
+    def move_to_home(self):
         self.gripper_angle = self.gripper_angle_spinbox.value()
         self.speed = self.speed_spinbox.value()
 
@@ -492,7 +495,6 @@ class AR3Controller(QMainWindow):
 def main():
     # create pyqt5 app
     QApplication.setStyle("fusion")
-    dark_mode = True
     app = QApplication(sys.argv)
     palette = DarkColors().palette
     app.setPalette(palette)

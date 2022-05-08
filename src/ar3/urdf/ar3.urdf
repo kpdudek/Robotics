@@ -44,13 +44,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Base.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Base.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Base.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Base.dae"/>
       </geometry>
     </visual>
   </link>
@@ -59,13 +59,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link1.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link1.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link1.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link1.dae"/>
       </geometry>
     </visual>
   </link>
@@ -83,13 +83,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link2.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link2.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link2.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link2.dae"/>
       </geometry>
     </visual>
   </link>
@@ -107,13 +107,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link3.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link3.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link3.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link3.dae"/>
       </geometry>
     </visual>
   </link>
@@ -131,13 +131,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link4.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link4.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link4.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link4.dae"/>
       </geometry>
     </visual>
   </link>
@@ -155,17 +155,17 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link5.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link5.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link5.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link5.dae"/>
       </geometry>
     </visual>
-  </link>
   <!-- JOINT 5 -->
+  </link>
   <joint name="joint5" type="revolute">
     <parent link="link4"/>
     <child link="link5"/>
@@ -179,13 +179,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link6.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link6.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/Link6.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/Link6.dae"/>
       </geometry>
     </visual>
   </link>
@@ -212,13 +212,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/gripper.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/gripper.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/kpdudek/Robotics/src/ar3/urdf/meshes/gripper.dae"/>
+        <mesh filename="file:///home/kurt/Robotics/src/ar3/urdf/meshes/gripper.dae"/>
       </geometry>
       <!--  -->
     </visual>
