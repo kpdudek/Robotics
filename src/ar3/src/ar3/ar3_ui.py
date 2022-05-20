@@ -73,7 +73,7 @@ class AR3Controller(QMainWindow):
         # Jog Panel
         self.timer = QTimer()
         self.timer.timeout.connect(self.jog_joints)
-        self.jog_rate = 1
+        self.jog_rate = 200
         self.jog_type = 0
         self.joint_jog_idx = 0
         self.joint_jog_dir = 1.0
@@ -224,7 +224,7 @@ class AR3Controller(QMainWindow):
             pose = self.starting_pose
             quat = quaternion_from_euler(pose[3],pose[4],pose[5],'rxyz')
             rx,ry,rz,rw = quat
-            pose[self.joint_jog_idx] += (.00001*self.jog_step)*self.joint_jog_dir
+            pose[self.joint_jog_idx] += (.001*self.jog_step)*self.joint_jog_dir
             x,y,z, = pose[0],pose[1],pose[2]
             self.qinit = list(self.feedback_angles)
             angles = self.solver.get_ik(self.qinit,x,y,z,rx,ry,rz,rw)
@@ -235,7 +235,7 @@ class AR3Controller(QMainWindow):
             self.jog_step += 1
         else:
             angles = list(self.feedback_angles)
-            angles[self.joint_jog_idx] += .01 * self.joint_jog_dir
+            angles[self.joint_jog_idx] += .2 * self.joint_jog_dir
 
         self.gripper_angle = self.robot_controller.AR3Feedback.gripper_angle
         self.speed = self.speed_spinbox.value()
