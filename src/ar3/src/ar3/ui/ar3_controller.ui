@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1082</width>
-    <height>920</height>
+    <width>911</width>
+    <height>839</height>
    </rect>
   </property>
   <property name="font">
@@ -582,7 +582,7 @@
            </widget>
           </item>
           <item row="7" column="0" colspan="2">
-           <widget class="QPushButton" name="goto_button">
+           <widget class="QPushButton" name="move_to_pose_button">
             <property name="palette">
              <palette>
               <active/>
@@ -601,7 +601,7 @@
            </widget>
           </item>
           <item row="10" column="0" colspan="2">
-           <widget class="QPushButton" name="rest_button">
+           <widget class="QPushButton" name="move_to_rest_button">
             <property name="palette">
              <palette>
               <active/>
@@ -635,7 +635,7 @@
            </widget>
           </item>
           <item row="9" column="0" colspan="2">
-           <widget class="QPushButton" name="zero_button">
+           <widget class="QPushButton" name="move_to_home_button">
             <property name="palette">
              <palette>
               <active/>
@@ -1759,7 +1759,7 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_14">
              <item row="3" column="1">
-              <widget class="QPushButton" name="program_down_button">
+              <widget class="QPushButton" name="program_remove_button">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1788,7 +1788,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>../../../../../../Documents/down_arrow.png</normaloff>../../../../../../Documents/down_arrow.png</iconset>
+                 <normaloff>delete_2.png</normaloff>delete_2.png</iconset>
                </property>
               </widget>
              </item>
@@ -1822,7 +1822,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>../../../../../../Documents/up_arrow.png</normaloff>../../../../../../Documents/up_arrow.png</iconset>
+                 <normaloff>up_arrow.png</normaloff>up_arrow.png</iconset>
                </property>
               </widget>
              </item>
@@ -1840,7 +1840,7 @@
               </spacer>
              </item>
              <item row="2" column="1">
-              <widget class="QPushButton" name="program_remove_button">
+              <widget class="QPushButton" name="program_down_button">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1869,7 +1869,7 @@
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>../../../../../../Documents/delete_2.png</normaloff>../../../../../../Documents/delete_2.png</iconset>
+                 <normaloff>down_arrow.png</normaloff>down_arrow.png</iconset>
                </property>
               </widget>
              </item>
@@ -1953,7 +1953,7 @@ color: rgb(0, 0, 0);</string>
               </widget>
              </item>
              <item row="0" column="0">
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="stop_button">
                <property name="font">
                 <font>
                  <pointsize>14</pointsize>
@@ -1971,7 +1971,7 @@ color: rgb(0, 0, 0)</string>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="hold_queue_button">
                <property name="font">
                 <font>
                  <pointsize>14</pointsize>
@@ -2054,8 +2054,8 @@ color: rgb(0, 0, 0);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1082</width>
-     <height>20</height>
+     <width>911</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2075,17 +2075,23 @@ color: rgb(0, 0, 0);</string>
     <string>Quit</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Q</string>
+    <string>Esc</string>
    </property>
   </action>
   <action name="actionSave_Queue">
    <property name="text">
     <string>Save Queue</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionLoad_Queue">
    <property name="text">
     <string>Load Queue</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>
