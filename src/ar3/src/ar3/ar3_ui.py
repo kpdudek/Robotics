@@ -32,15 +32,18 @@ class AR3Controller(QMainWindow):
         self.screen_height = screen.size().height()
         self.screen_width = screen.size().width()
         self.setWindowTitle("AR3 Controller")
+        
         width = 1000
         height = 900
         # self.setGeometry(math.floor((self.screen_width-width)/2), math.floor((self.screen_height-height)/2), width, height) 
         self.setGeometry(50,50,1600,1000)
+
         with open(self.ar3_path+'/urdf/ar3.urdf', 'r') as fp:
             urdf = fp.read()
         self.solver = IK("world", "tcp", urdf_string=urdf)
         self.qinit = [0.0] * self.solver.number_of_joints
         
+        self.connected = False
         self.ar3_feeback_sub = rospy.Subscriber('/AR3/Feedback',ar3_feedback,self.update_feedback_label)
         self.listener = tf.TransformListener()
         self.robot_controller = RobotController()
@@ -127,6 +130,9 @@ class AR3Controller(QMainWindow):
         self.show()
         self.set_jog_type()
         self.switch_jog_type()
+
+        if not self.connected:
+            self.frame_3.setEnabled(False)
 
     '''
         Menu Bar Actions
@@ -237,7 +243,7 @@ class AR3Controller(QMainWindow):
 
         self.gripper_angle = self.robot_controller.AR3Feedback.gripper_angle
         self.speed = self.speed_spinbox.value()
-        self.robot_controller.AR3Control.accelerate = 0
+        self.robot_controller.AR3Control.accelerate = 1
         self.robot_controller.AR3Control.speed = self.speed
         self.robot_controller.AR3Control.gripper_angle = self.gripper_angle
         self.robot_controller.AR3Control.joint_angles = angles
@@ -264,6 +270,7 @@ class AR3Controller(QMainWindow):
     def program_down(self):
         if self.queue_list.count() == 0:
             return
+        count = self.queue_list.count()
         
         self.cursor_idx = self.queue_list.currentRow()
         program_line = self.queue_list.takeItem(self.cursor_idx)
@@ -279,6 +286,7 @@ class AR3Controller(QMainWindow):
     def program_remove(self):
         if self.queue_list.count() == 0:
             return
+        
         self.cursor_idx = self.queue_list.currentRow()
         self.queue_list.takeItem(self.cursor_idx)
         self.program_buffer.pop(self.cursor_idx)
@@ -463,6 +471,7 @@ class AR3Controller(QMainWindow):
         Feedback Panel
     '''
     def update_feedback_label(self,data):
+        self.connected = True
         try:
             idx = 0
             for lcd in self.joint_lcds:
@@ -495,7 +504,7 @@ def main():
     dark_mode = True
     app = QApplication(sys.argv)
     palette = DarkColors().palette
-    app.setPalette(palette)
+    # app.setPalette(palette)
     # create the instance of our Window 
     main_window = AR3Controller(app.primaryScreen()) 
     # start the app 
