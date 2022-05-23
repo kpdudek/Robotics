@@ -16,6 +16,7 @@ from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 from RobotControllerClass import RobotController
 from utils.PaintUtils import DarkColors
+# from utils.src.utils.PaintUtils import DarkColors
 
 class AR3Controller(QMainWindow):
 
@@ -47,6 +48,8 @@ class AR3Controller(QMainWindow):
         self.feedback_angles = []
         self.setpoint_angles = []
 
+        self.gripper_angle = self.gripper_angle_spinbox.value()
+        
         # Move Commands
         self.move_to_pose_button.clicked.connect(self.move_to_pose)
         self.move_to_rest_button.clicked.connect(self.move_to_rest)
@@ -342,6 +345,7 @@ class AR3Controller(QMainWindow):
                 flag = True
 
     def run_queue(self):
+        print('Running queue with '+str(self.queue_list.count())+' lines.')
         for idx in range(self.queue_list.count()):
             program_line = self.queue_list.item(idx).text()
             tokens = program_line.split(' ')
@@ -472,6 +476,8 @@ class AR3Controller(QMainWindow):
     '''
     def update_feedback_label(self,data):
         self.connected = True
+        self.frame_3.setEnabled(True)
+        
         try:
             idx = 0
             for lcd in self.joint_lcds:

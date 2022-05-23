@@ -8,8 +8,7 @@ from std_msgs.msg import Float64
 import time
 import sys
 import os,getopt
-from teensy.msg import ar3_control
-from ar3.msg import ar3_feedback
+from ar3.msg import ar3_feedback, ar3_control
 
 import sys
 import os
